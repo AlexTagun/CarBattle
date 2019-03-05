@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 290941787255468471}
   - component: {fileID: 8770411894874560175}
   - component: {fileID: 4484609755464275415}
+  - component: {fileID: 4383602853567718135}
   m_Layer: 0
   m_Name: GunTurret
   m_TagString: Untagged
@@ -83,6 +84,18 @@ MonoBehaviour:
     type: 3}
   ShootLinePrefab: {fileID: 5378067622518614496, guid: 0280b88909e539e419e08f2273e3efe4,
     type: 3}
+--- !u!114 &4383602853567718135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7694735325698405893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a35baa51ac48446a0e950abe968270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8914372589558816374
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,11 +182,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4598111703997047016}
     m_Modifications:
-    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
-        type: 3}
-      propertyPath: m_Name
-      value: ShootPoint1
-      objectReference: {fileID: 0}
     - target: {fileID: 288729545875387893, guid: a0793bba97581bc488fd27e714ae2203,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -229,6 +237,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
+        type: 3}
+      propertyPath: m_Name
+      value: ShootPoint1
+      objectReference: {fileID: 0}
     - target: {fileID: 288729545875387786, guid: a0793bba97581bc488fd27e714ae2203,
         type: 3}
       propertyPath: m_Color.r
@@ -259,11 +272,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4598111703997047016}
     m_Modifications:
-    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
-        type: 3}
-      propertyPath: m_Name
-      value: ShootPoint2
-      objectReference: {fileID: 0}
     - target: {fileID: 288729545875387893, guid: a0793bba97581bc488fd27e714ae2203,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -318,6 +326,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
+        type: 3}
+      propertyPath: m_Name
+      value: ShootPoint2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a0793bba97581bc488fd27e714ae2203, type: 3}

@@ -146,7 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsControlled: 1
   GasChangeSpeed: 0.3
-  MaxGasValue: 50
+  MaxGasValue: 20
   MaxReversValue: 10
   SteeringWheelSpeed: 1
   SteeringWheelReturnSpeed: 2
