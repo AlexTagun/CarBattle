@@ -5,7 +5,7 @@ using UnityEngine;
 public class InputCarController : MonoBehaviour
 {
     //Fields
-    private TestCarMovement _carMovement = null;
+    private CarPhysicsLogic _carPhysics = null;
     private WeaponGunLogic[] _weaponGunsLogic = null;
 
     //-Input state
@@ -23,7 +23,7 @@ public class InputCarController : MonoBehaviour
     //Methods
     //-Implementation
     private void Start() {
-        _carMovement = gameObject.GetComponent<TestCarMovement>();
+        _carPhysics = gameObject.GetComponentInChildren<CarPhysicsLogic>();
         _weaponGunsLogic = gameObject.GetComponentsInChildren<WeaponGunLogic>();
     }
 
@@ -53,21 +53,21 @@ public class InputCarController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W)) _isGasIsPressed = true;
         if (Input.GetKeyUp(KeyCode.W)) _isGasIsPressed = false;
 
-        if (Input.GetKeyDown(KeyCode.D)) _isClockwiseRotatePressed = true;
-        if (Input.GetKeyUp(KeyCode.D)) _isClockwiseRotatePressed = false;
+        if (Input.GetKeyDown(KeyCode.A)) _isClockwiseRotatePressed = true;
+        if (Input.GetKeyUp(KeyCode.A)) _isClockwiseRotatePressed = false;
 
-        if (Input.GetKeyDown(KeyCode.A)) _isCounterClockwiseRotatePressed = true;
-        if (Input.GetKeyUp(KeyCode.A)) _isCounterClockwiseRotatePressed = false;
+        if (Input.GetKeyDown(KeyCode.D)) _isCounterClockwiseRotatePressed = true;
+        if (Input.GetKeyUp(KeyCode.D)) _isCounterClockwiseRotatePressed = false;
     }
 
     //-Car control
     private void Update_CarControl() {
         //Car movement update
-        if (_isGasIsPressed) _carMovement.applyGas();
-        if (_isReversIsPressed) _carMovement.applyRevers();
+        if (_isGasIsPressed) _carPhysics.applyGas();
+        if (_isReversIsPressed) _carPhysics.applyRevers();
 
-        if (_isClockwiseRotatePressed) _carMovement.rotateSteeringWheelClockwise();
-        if (_isCounterClockwiseRotatePressed) _carMovement.rotateSteeringWheelCounterClockwise();
+        if (_isClockwiseRotatePressed) _carPhysics.rotateSteeringWheelClockwise();
+        if (_isCounterClockwiseRotatePressed) _carPhysics.rotateSteeringWheelCounterClockwise();
 
         //Car shooting update
         if (_isMouseButtonPressed) {
@@ -84,9 +84,7 @@ public class InputCarController : MonoBehaviour
     }
 
     //-Utils
-    private Vector2 getMouseWorldPosition()
-    {
+    private Vector2 getMouseWorldPosition() {
         return Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
-
 }

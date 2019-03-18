@@ -11,13 +11,22 @@ public class TransformHolderLogic : MonoBehaviour
             rotation = inTransform.localRotation.eulerAngles.z;
         }
 
+        public void set(Point inPoint) {
+            position = inPoint.position;
+            rotation = inPoint.rotation;
+        }
+
         public Vector2 position;
         public float rotation;
     }
 
-     public Point getTransformAndDestroy() {
+    public Point getTransform(bool inDestroyAfterGet = true) {
         Point theResult = new Point(gameObject.transform);
-        Destroy(this);
+        if (inDestroyAfterGet) destroy();
         return theResult;
+    }
+
+    public void destroy() {
+        Destroy(gameObject);
     }
 }

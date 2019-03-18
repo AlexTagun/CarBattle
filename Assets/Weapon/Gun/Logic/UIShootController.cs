@@ -7,14 +7,14 @@ public class UIShootController : MonoBehaviour
     UIManager uiManager;
 
     private void Start() {
-        uiManager = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();
+        //uiManager = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();
     }
     public void setClipStats(int clipCapacity, int ammoQuantity) {
-        uiManager.setAmmoPanelData(clipCapacity, ammoQuantity);
+        //uiManager.setAmmoPanelData(clipCapacity, ammoQuantity);
     }
-
+    
     public void setAmmoQuantity(int ammoQuantity) {
-        uiManager.setAmmoPanelQuantity(ammoQuantity);
+        //uiManager.setAmmoPanelQuantity(ammoQuantity);
     }
     
 }

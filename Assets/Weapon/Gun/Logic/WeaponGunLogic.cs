@@ -25,7 +25,7 @@ public class WeaponGunLogic : WeaponLogic
         TransformHolderLogic[] theShootingPointHolders = gameObject.GetComponentsInChildren<TransformHolderLogic>();
         _shootingPoints = new TransformHolderLogic.Point[theShootingPointHolders.Length];
         for (int theIndex = 0; theIndex < theShootingPointHolders.Length; ++theIndex) {
-            _shootingPoints[theIndex] = theShootingPointHolders[theIndex].getTransformAndDestroy();
+            _shootingPoints[theIndex] = theShootingPointHolders[theIndex].getTransform();
         }
 
         _rotateLogic = gameObject.GetComponent<RotateToTargetAngleLogic>();

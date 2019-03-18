@@ -4,65 +4,71 @@ namespace Values
 {
     // ============================= LimitedFloat =================================
 
-    public class LimitedFloat {
-
+    public class LimitedFloat
+    {
         //Types
         [System.Serializable]
         public struct ZeroBasedState {
-            public ZeroBasedState(float InMaximum, bool SetValueAsMaximum = false)
-                : this(SetValueAsMaximum ? InMaximum : 0.0f, InMaximum) { }
+            public ZeroBasedState(float inMaximum, bool inSetValueAsMaximum = false)
+                : this(inSetValueAsMaximum ? inMaximum : 0.0f, inMaximum) { }
 
-            public ZeroBasedState(float InValue, float InMaximum) {
-                Value = InValue;
-                Maximum = InMaximum;
+            public ZeroBasedState(float inMaximum, float inValue) {
+                Maximum = inMaximum;
+                Value =inValue;
             }
 
-            public float Value;
             public float Maximum;
+            public float Value;
         }
 
         [System.Serializable]
         public struct State {
-            public State(float InValue, float InMinimum, float InMaximum) {
-                Value = InValue;
-                Minimum = InMinimum;
-                Maximum = InMaximum;
+            public State(float inMinimum, float inMaximum, float inValue = 0.0f) {
+                Minimum = inMinimum;
+                Maximum = inMaximum;
+                Value = inValue;
             }
 
-            public float Value;
             public float Minimum, Maximum;
+            public float Value;
         }
 
         //Methods
         //-Initialization
-        public LimitedFloat()
-            : this(0.0f) { }
-        public LimitedFloat(float inValue)
-            : this(inValue, 0.0f, 1.0f) { }
-        public LimitedFloat(float inMinimum, float inMaximum)
-            : this(0.0f, inMinimum, inMaximum) { }
-        public LimitedFloat(float inValue, float inMinimum, float inMaximum)
-            : this(new State(inValue, inMinimum, inMaximum)) { }
-
+        public LimitedFloat(float inValue = 0.0f)
+            : this(0.0f, 1.0f, inValue) { }
+        public LimitedFloat(float inMinimum, float inMaximum, float inValue = 0.0f)
+            : this(new State(inMinimum, inMaximum, inValue)) { }
         public LimitedFloat(ZeroBasedState inState)
-            : this(new State(inState.Value, 0.0f, inState.Maximum)) { }
+            : this(new State(0.0f, inState.Maximum, inState.Value)) { }
 
-        public LimitedFloat(State inState) {
-            //TODO: Put assert if Max > Min
-            _state = inState;
-        }
+        public LimitedFloat(State inState) { _state = inState; normalizeState(); }
+
+        public LimitedFloat(LimitedFloat inValue) { _state = inValue._state; normalizeState(); }
 
         //-Accessors
         public float getMinimum() { return _state.Minimum; }
         public void setMinimum(float inMinimum) {
             _state.Minimum = inMinimum;
-            setValue(_state.Value);
+            normalizeState();
         }
 
         public float getMaximum() { return _state.Maximum; }
         public void setMaximum(float inMaximum) {
             _state.Maximum = inMaximum;
-            setValue(_state.Value);
+            normalizeState();
+        }
+
+        public void setLimits(float inMinimum, float inMaximum) {
+            _state.Minimum = inMinimum;
+            _state.Maximum = inMaximum;
+            normalizeState();
+        }
+        public void set(float inMinimum, float inMaximum, float inValue) {
+            _state.Minimum = inMinimum;
+            _state.Maximum = inMaximum;
+            _state.Value = inValue;
+            normalizeState();
         }
 
         public float getRange() { return getMaximum() - getMinimum(); }
@@ -83,6 +89,17 @@ namespace Values
         public float getValueFromMaximum() { return getMaximum() - getValue(); }
         public float getValuePercenFromMaximum() { return getValueFromMaximum()/getRange(); }
 
+        //-Implementation
+        //--Utils
+        private void normalizeState() {
+            if (_state.Minimum > _state.Maximum) {
+                float theTmp = _state.Minimum;
+                _state.Minimum = _state.Maximum;
+                _state.Maximum = theTmp;
+            }
+            setValue(_state.Value);
+        }
+
         //Fields
         private State _state;
     }
@@ -91,51 +108,74 @@ namespace Values
 
     public class LimitedFloatAngle
     {
+        //Types
+        [System.Serializable]
+        public struct State {
+            public State(float inAngle = 0.0f)
+                : this(-180.0f, 180.0f, inAngle) { }
+            public State(float inLimit, bool inLimitFromNegativeToPositive = true, float inAngle = 0.0f)
+                : this(inLimitFromNegativeToPositive ? -inLimit : inLimit,
+                      inLimitFromNegativeToPositive ? inLimit : -inLimit,
+                      inAngle) { }
+
+            public State(float inLimitFrom, float inLimitTo, float inAngle = 0.0f) {
+                LimitFrom = inLimitFrom;
+                LimitTo = inLimitTo;
+                Angle = inAngle;
+            }
+
+            public float LimitFrom, LimitTo;
+            public float Angle;
+        }
+
         //Methods
         //-Initialization
         public LimitedFloatAngle()
             : this(0.0f) { }
         public LimitedFloatAngle(float inAngle)
             : this(inAngle, -180.0f, 180.0f) { }
-        public LimitedFloatAngle(float inLimitFrom, float inLimitTo)
-            : this(0.0f, inLimitFrom, inLimitTo) { }
+        public LimitedFloatAngle(float inLimitFrom, float inLimitTo, float inAngle = 0.0f)
+            : this(new State(inLimitFrom, inLimitTo, inAngle)) { }
 
-        public LimitedFloatAngle(float inAngle, float inLimitFrom, float inLimitTo) {
-            _limitFrom = LimitedFloatAngle.getNormalizedAngle(inLimitFrom);
-            _limitTo = LimitedFloatAngle.getNormalizedAngle(inLimitTo);
+        public LimitedFloatAngle(State inState) { _state = inState; normalizeState(); }
 
-            setAngle(inAngle);
-        }
+        public LimitedFloatAngle(LimitedFloatAngle inValue) { _state = inValue._state; normalizeState(); }
 
         //-Accessors
-        public float getLimitFrom() { return _limitFrom; }
-        public float getLimitTo() { return _limitTo; }
+        public float getLimitFrom() { return _state.LimitFrom; }
+        public float getLimitTo() { return _state.LimitTo; }
         public float getLimitingAngle() {
             return getNormalizedAnglesClockwiseDelta(getLimitFrom(), getLimitTo());
         }
         public bool isUnlimited() { return Mathf.Approximately(getLimitingAngle(), 360.0f); }
 
-        public float getAngle() { return _angle; }
+        public float getAngle() { return _state.Angle; }
         public float setAngle(float inAngle) {
             float theNormalizedAngle = getNormalizedAngle(inAngle);
-            return _angle = isAngleAchievable(theNormalizedAngle) ?
+            return _state.Angle = isAngleAchievable(theNormalizedAngle) ?
                     theNormalizedAngle : getNearestLimitForAngle(theNormalizedAngle);
         }
 
         public float changeAngle(float inValueDelta) {
-            if (0.0f == inValueDelta) return 0.0f;
+            if (Mathf.Approximately(inValueDelta, 0.0f)) return 0.0f;
 
-            float theOldAngle = _angle;
+            float theOldAngle = _state.Angle;
 
-            float theNewAngle = getNormalizedAngle(_angle + inValueDelta);
+            float theNewAngle = getNormalizedAngle(_state.Angle + inValueDelta);
             float theDelta = getNormalizedAnglesClockwiseDelta(
                 getLimitFrom(), theNewAngle
             );
+            float theDirectedDelta = getNormalizedAngle(theDelta);
 
-            _angle = theDelta < getLimitingAngle() ? theNewAngle :
-                (inValueDelta > 0.0f ? getLimitTo() : getLimitFrom());
+            if (theDirectedDelta < 0.0f) {
+                _state.Angle = getLimitFrom();
+            } else if (theDirectedDelta > getLimitingAngle()) {
+                _state.Angle = getLimitTo();
+            } else {
+                _state.Angle = theNewAngle;
+            }
 
-            return getNormalizedAngle(_angle - theOldAngle);
+            return getNormalizedAngle(_state.Angle - theOldAngle);
         }
 
         public float changeAngleToAchieveTargetAngleWithSpeed(float inTargetAngle, float inSpeed) {
@@ -153,11 +193,16 @@ namespace Values
         }
 
         //-Utils
-        public static float getNormalizedAngle(float inAngle)
-        {
+        public static float getNormalizedAngle(float inAngle) {
             float theAngle = inAngle % 360.0f;
             return theAngle > 180.0f ? theAngle - 360.0f :
                 theAngle < -180.0f ? theAngle + 360.0f : theAngle;
+        }
+
+        public static float getNormalizedAnglesClockwiseDelta(float inFrom, float inTo) {
+            float theDelta = inTo - inFrom;
+            if (theDelta < 0.0f) theDelta += 360;
+            return theDelta;
         }
 
         public bool isAngleAchievable(float inAngle) {
@@ -196,26 +241,25 @@ namespace Values
             float theDeltaToAchieveFromLimit = 0.0f;
             float theDeltaToAchieveToLimit = 0.0f;
             if (isAngleAchievable(inAngle)) {
-                theDeltaToAchieveFromLimit = getNormalizedAnglesClockwiseDelta(_limitFrom, theNormalizedAngle);
-                theDeltaToAchieveToLimit = getNormalizedAnglesClockwiseDelta(theNormalizedAngle, _limitTo);
+                theDeltaToAchieveFromLimit = getNormalizedAnglesClockwiseDelta(getLimitFrom(), theNormalizedAngle);
+                theDeltaToAchieveToLimit = getNormalizedAnglesClockwiseDelta(theNormalizedAngle, getLimitTo());
             } else {
-                theDeltaToAchieveFromLimit = getNormalizedAnglesClockwiseDelta(theNormalizedAngle, _limitFrom);
-                theDeltaToAchieveToLimit = getNormalizedAnglesClockwiseDelta(_limitTo, theNormalizedAngle);
+                theDeltaToAchieveFromLimit = getNormalizedAnglesClockwiseDelta(theNormalizedAngle, getLimitFrom());
+                theDeltaToAchieveToLimit = getNormalizedAnglesClockwiseDelta(getLimitTo(), theNormalizedAngle);
             }
             return theDeltaToAchieveFromLimit < theDeltaToAchieveToLimit ? getLimitFrom() : getLimitTo();
         }
 
         //-Implementation
         //--Utils
-        private static float getNormalizedAnglesClockwiseDelta(float inFrom, float inTo) {
-            float theDelta = inTo - inFrom;
-            if (theDelta < 0.0f) theDelta += 360;
-            return theDelta;
+        private void normalizeState() {
+            _state.LimitFrom = LimitedFloatAngle.getNormalizedAngle(_state.LimitFrom);
+            _state.LimitTo = LimitedFloatAngle.getNormalizedAngle(_state.LimitTo);
+
+            setAngle(_state.Angle);
         }
 
         //Fields
-        private float _angle = 0.0f;
-        private float _limitFrom = -180.0f;
-        private float _limitTo = 180.0f;
+        private State _state;
     }
 }
