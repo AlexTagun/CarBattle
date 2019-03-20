@@ -28,29 +28,12 @@ public class CarFutureSimulationTest : MonoBehaviour
 
         theSimulationManager.simulate(gameObject, 50, (GameObject inSimultaion)=>{
             CarPhysicsLogic theLogic = inSimultaion.GetComponent<CarPhysicsLogic>();
+            theLogic.debugDraw();
 
             theLogic.rotateSteeringWheelClockwise();
             theLogic.applyGas();
-
-            drawCross(inSimultaion.transform.position);
         });
 
         //isFirstLocal = false;
-    }
-
-    void drawCross(Vector2 inPosition) {
-        const float theCrossSize = 0.3f;
-
-        Debug.DrawLine(
-            new Vector2(inPosition.x - theCrossSize, inPosition.y),
-            new Vector2(inPosition.x + theCrossSize, inPosition.y),
-            Color.green
-        );
-
-        Debug.DrawLine(
-            new Vector2(inPosition.x, inPosition.y - theCrossSize),
-            new Vector2(inPosition.x, inPosition.y + theCrossSize),
-            Color.green
-        );
     }
 }

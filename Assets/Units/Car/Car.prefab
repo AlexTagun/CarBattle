@@ -341,6 +341,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7084576513572108231}
     m_Modifications:
+    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
+        type: 3}
+      propertyPath: m_Name
+      value: RearRightWheel
+      objectReference: {fileID: 0}
     - target: {fileID: 288729545875387893, guid: a0793bba97581bc488fd27e714ae2203,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -376,11 +381,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
-        type: 3}
-      propertyPath: m_Name
-      value: RearRightWheel
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a0793bba97581bc488fd27e714ae2203, type: 3}
 --- !u!1 &1517981728438829699 stripped
@@ -402,6 +402,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7084576513572108231}
     m_Modifications:
+    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
+        type: 3}
+      propertyPath: m_Name
+      value: FrontRightWheel
+      objectReference: {fileID: 0}
     - target: {fileID: 288729545875387893, guid: a0793bba97581bc488fd27e714ae2203,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -437,11 +442,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
-        type: 3}
-      propertyPath: m_Name
-      value: FrontRightWheel
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a0793bba97581bc488fd27e714ae2203, type: 3}
 --- !u!1 &1759844769307147986 stripped
@@ -463,6 +463,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7084576513572108231}
     m_Modifications:
+    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
+        type: 3}
+      propertyPath: m_Name
+      value: RearLeftWheel
+      objectReference: {fileID: 0}
     - target: {fileID: 288729545875387893, guid: a0793bba97581bc488fd27e714ae2203,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -497,11 +502,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
-        type: 3}
-      propertyPath: m_Name
-      value: RearLeftWheel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a0793bba97581bc488fd27e714ae2203, type: 3}
@@ -599,6 +599,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7084576513572108231}
     m_Modifications:
+    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
+        type: 3}
+      propertyPath: m_Name
+      value: FrontLeftWheel
+      objectReference: {fileID: 0}
     - target: {fileID: 288729545875387893, guid: a0793bba97581bc488fd27e714ae2203,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -633,11 +638,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 288729545875387787, guid: a0793bba97581bc488fd27e714ae2203,
-        type: 3}
-      propertyPath: m_Name
-      value: FrontLeftWheel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a0793bba97581bc488fd27e714ae2203, type: 3}
