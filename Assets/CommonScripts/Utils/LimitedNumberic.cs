@@ -4,8 +4,7 @@ namespace Values
 {
     // ============================= LimitedFloat =================================
 
-    public class LimitedFloat
-    {
+    public struct LimitedFloat {
         //Types
         [System.Serializable]
         public struct ZeroBasedState {
@@ -106,7 +105,7 @@ namespace Values
 
     // ======================== LimitedFloatAngle =============================
 
-    public class LimitedFloatAngle
+    public struct LimitedFloatAngle
     {
         //Types
         [System.Serializable]
@@ -130,9 +129,7 @@ namespace Values
 
         //Methods
         //-Initialization
-        public LimitedFloatAngle()
-            : this(0.0f) { }
-        public LimitedFloatAngle(float inAngle)
+        public LimitedFloatAngle(float inAngle = 0.0f)
             : this(inAngle, -180.0f, 180.0f) { }
         public LimitedFloatAngle(float inLimitFrom, float inLimitTo, float inAngle = 0.0f)
             : this(new State(inLimitFrom, inLimitTo, inAngle)) { }
@@ -145,13 +142,13 @@ namespace Values
         public float getLimitFrom() { return _state.LimitFrom; }
         public float getLimitTo() { return _state.LimitTo; }
         public float getLimitingAngle() {
-            return getNormalizedAnglesClockwiseDelta(getLimitFrom(), getLimitTo());
+            return XMath.getNormalizedAnglesClockwiseDelta(getLimitFrom(), getLimitTo());
         }
         public bool isUnlimited() { return Mathf.Approximately(getLimitingAngle(), 360.0f); }
 
         public float getAngle() { return _state.Angle; }
         public float setAngle(float inAngle) {
-            float theNormalizedAngle = getNormalizedAngle(inAngle);
+            float theNormalizedAngle = XMath.getNormalizedAngle(inAngle);
             return _state.Angle = isAngleAchievable(theNormalizedAngle) ?
                     theNormalizedAngle : getNearestLimitForAngle(theNormalizedAngle);
         }
@@ -161,28 +158,26 @@ namespace Values
 
             float theOldAngle = _state.Angle;
 
-            float theNewAngle = getNormalizedAngle(_state.Angle + inValueDelta);
-            float theDelta = getNormalizedAnglesClockwiseDelta(
-                getLimitFrom(), theNewAngle
-            );
-            float theDirectedDelta = getNormalizedAngle(theDelta);
+            float theNewAngle = XMath.getNormalizedAngle(_state.Angle + inValueDelta);
+            float theDelta = XMath.getNormalizedAnglesClockwiseDelta(getLimitFrom(), theNewAngle);
+            float theDirectedDelta = XMath.getNormalizedAngle(theDelta);
 
-            if (theDirectedDelta < 0.0f) {
+            if (!isUnlimited() && theDirectedDelta < 0.0f) {
                 _state.Angle = getLimitFrom();
-            } else if (theDirectedDelta > getLimitingAngle()) {
+            } else if (!isUnlimited() && theDirectedDelta > getLimitingAngle()) {
                 _state.Angle = getLimitTo();
             } else {
                 _state.Angle = theNewAngle;
             }
 
-            return getNormalizedAngle(_state.Angle - theOldAngle);
+            return XMath.getNormalizedAngle(_state.Angle - theOldAngle);
         }
 
         public float changeAngleToAchieveTargetAngleWithSpeed(float inTargetAngle, float inSpeed) {
-            float theAngleToAchieve = getNormalizedAngle(inTargetAngle);
+            float theAngleToAchieve = XMath.getNormalizedAngle(inTargetAngle);
             if (Mathf.Approximately(theAngleToAchieve, getAngle())) return 0.0f;
 
-            float theNearestDiraction = getNormalizedAngle(theAngleToAchieve - getAngle());
+            float theNearestDiraction = XMath.getNormalizedAngle(theAngleToAchieve - getAngle());
             if (Mathf.Abs(theNearestDiraction) <= inSpeed) {
                 setAngle(inTargetAngle);
                 return 0.0f; //TODO: Return real delta!!!
@@ -193,41 +188,30 @@ namespace Values
         }
 
         //-Utils
-        public static float getNormalizedAngle(float inAngle) {
-            float theAngle = inAngle % 360.0f;
-            return theAngle > 180.0f ? theAngle - 360.0f :
-                theAngle < -180.0f ? theAngle + 360.0f : theAngle;
-        }
-
-        public static float getNormalizedAnglesClockwiseDelta(float inFrom, float inTo) {
-            float theDelta = inTo - inFrom;
-            if (theDelta < 0.0f) theDelta += 360;
-            return theDelta;
-        }
-
         public bool isAngleAchievable(float inAngle) {
-            float theNormalizedAngle = getNormalizedAngle(inAngle);
-            float theDelta = getNormalizedAnglesClockwiseDelta(getLimitFrom(), theNormalizedAngle);
+            float theNormalizedAngle = XMath.getNormalizedAngle(inAngle);
+            float theDelta = XMath.getNormalizedAnglesClockwiseDelta(getLimitFrom(), theNormalizedAngle);
             return theDelta < getLimitingAngle() || Mathf.Approximately(theDelta, getLimitingAngle());
         }
 
         public float getDiractionToAchieveAngle(float inAngleToAchieve) {
             float theCurrentAngle = getAngle();
-            float theAngleToAchieve = getNormalizedAngle(inAngleToAchieve);
+            float theAngleToAchieve = XMath.getNormalizedAngle(inAngleToAchieve);
 
             if (Mathf.Approximately(theCurrentAngle, theAngleToAchieve)) return 0.0f;
 
             if (isAngleAchievable(theAngleToAchieve)) {
-                float theNearestDiraction = getNormalizedAngle(theAngleToAchieve - theCurrentAngle);
+                float theNearestDiraction = XMath.getNormalizedAngle(theAngleToAchieve - theCurrentAngle);
                 if (isUnlimited()) return theNearestDiraction > 0.0f ? 1.0f : -1.0f;
 
                 if (theNearestDiraction > 0.0f) {
-                    float theTestAngle = getNormalizedAnglesClockwiseDelta(getLimitFrom(), theCurrentAngle);
-                    theTestAngle += getNormalizedAnglesClockwiseDelta(theCurrentAngle, theAngleToAchieve);
-                    return theTestAngle < getLimitingAngle() || Mathf.Approximately(theTestAngle, getLimitingAngle()) ? 1.0f : -1.0f;
+                    float theTestAngle = XMath.getNormalizedAnglesClockwiseDelta(getLimitFrom(), theCurrentAngle);
+                    theTestAngle += XMath.getNormalizedAnglesClockwiseDelta(theCurrentAngle, theAngleToAchieve);
+                    return theTestAngle < getLimitingAngle() || Mathf.Approximately(theTestAngle, getLimitingAngle()) ?
+                        1.0f : -1.0f;
                 } else {
-                    float theTestAngle = getNormalizedAnglesClockwiseDelta(getLimitFrom(), theCurrentAngle);
-                    theTestAngle -= getNormalizedAnglesClockwiseDelta(getLimitFrom(), theAngleToAchieve);
+                    float theTestAngle = XMath.getNormalizedAnglesClockwiseDelta(getLimitFrom(), theCurrentAngle);
+                    theTestAngle -= XMath.getNormalizedAnglesClockwiseDelta(getLimitFrom(), theAngleToAchieve);
                     return theTestAngle > 0.0f || Mathf.Approximately(theTestAngle, 0.0f) ? -1.0f : 1.0f;
                 }
             } else {
@@ -236,16 +220,16 @@ namespace Values
         }
 
         public float getNearestLimitForAngle(float inAngle) {
-            float theNormalizedAngle = getNormalizedAngle(inAngle);
+            float theNormalizedAngle = XMath.getNormalizedAngle(inAngle);
 
             float theDeltaToAchieveFromLimit = 0.0f;
             float theDeltaToAchieveToLimit = 0.0f;
             if (isAngleAchievable(inAngle)) {
-                theDeltaToAchieveFromLimit = getNormalizedAnglesClockwiseDelta(getLimitFrom(), theNormalizedAngle);
-                theDeltaToAchieveToLimit = getNormalizedAnglesClockwiseDelta(theNormalizedAngle, getLimitTo());
+                theDeltaToAchieveFromLimit = XMath.getNormalizedAnglesClockwiseDelta(getLimitFrom(), theNormalizedAngle);
+                theDeltaToAchieveToLimit = XMath.getNormalizedAnglesClockwiseDelta(theNormalizedAngle, getLimitTo());
             } else {
-                theDeltaToAchieveFromLimit = getNormalizedAnglesClockwiseDelta(theNormalizedAngle, getLimitFrom());
-                theDeltaToAchieveToLimit = getNormalizedAnglesClockwiseDelta(getLimitTo(), theNormalizedAngle);
+                theDeltaToAchieveFromLimit = XMath.getNormalizedAnglesClockwiseDelta(theNormalizedAngle, getLimitFrom());
+                theDeltaToAchieveToLimit = XMath.getNormalizedAnglesClockwiseDelta(getLimitTo(), theNormalizedAngle);
             }
             return theDeltaToAchieveFromLimit < theDeltaToAchieveToLimit ? getLimitFrom() : getLimitTo();
         }
@@ -253,8 +237,8 @@ namespace Values
         //-Implementation
         //--Utils
         private void normalizeState() {
-            _state.LimitFrom = LimitedFloatAngle.getNormalizedAngle(_state.LimitFrom);
-            _state.LimitTo = LimitedFloatAngle.getNormalizedAngle(_state.LimitTo);
+            _state.LimitFrom = XMath.getNormalizedAngle(_state.LimitFrom);
+            _state.LimitTo = XMath.getNormalizedAngle(_state.LimitTo);
 
             setAngle(_state.Angle);
         }

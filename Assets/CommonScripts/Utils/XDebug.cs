@@ -4,32 +4,51 @@ using UnityEngine;
 
 public class XDebug : MonoBehaviour
 {
+    public struct DebugDrawSettings {
+
+        public DebugDrawSettings(Color inColor,
+            float inDuration = 0.0f,
+            bool inDoDepthTest = false)
+        {
+            color = inColor;
+            duration = inDuration;
+            doDepthTest = inDoDepthTest;
+        }
+
+        public Color color;
+        public float duration;
+        public bool doDepthTest;
+
+        public static DebugDrawSettings defaultValue =
+                new DebugDrawSettings(Color.white, 0.0f, false);
+    }
 
     // --------------------------- drawCross -----------------------------------
 
-    void drawCross(Vector2 inPosition,
-        Color inColor, float inDuration, bool inDepthTest)
-    {
+    public static void drawCross(Vector2 inPosition, DebugDrawSettings inDrawSettings) {
         const float theCrossSize = 0.3f;
 
         Debug.DrawLine(
             new Vector2(inPosition.x - theCrossSize, inPosition.y),
             new Vector2(inPosition.x + theCrossSize, inPosition.y),
-            inColor, inDuration, inDepthTest
+            inDrawSettings.color, inDrawSettings.duration, inDrawSettings.doDepthTest
         );
 
         Debug.DrawLine(
             new Vector2(inPosition.x, inPosition.y - theCrossSize),
             new Vector2(inPosition.x, inPosition.y + theCrossSize),
-            inColor, inDuration, inDepthTest
+            inDrawSettings.color, inDrawSettings.duration, inDrawSettings.doDepthTest
         );
+    }
+
+    public static void drawCross(Vector2 inPosition) {
+        drawCross(inPosition, DebugDrawSettings.defaultValue);
     }
 
     // ------------------------- drawRectangle ---------------------------------
 
-    public static void drawRectangle(
-        Vector2 inPosition, Vector2 inSize, float inRotation,
-        Color inColor, float inDuration, bool inDepthTest)
+    public static void drawRectangle(Vector2 inPosition, Vector2 inSize, float inRotation,
+        DebugDrawSettings inDrawSettings)
     {
         Vector2 theXSideVector = XMath.rotate(new Vector2(inSize.x, 0.0f), inRotation);
         Vector2 theYSideVector = XMath.rotate(new Vector2(0.0f, inSize.y), inRotation);
@@ -40,51 +59,29 @@ public class XDebug : MonoBehaviour
         Vector2 theLastRectCornerPosition = theRectCornerPosition;
         theRectCornerPosition += theXSideVector;
         Debug.DrawLine(theLastRectCornerPosition, theRectCornerPosition,
-            inColor, inDuration, inDepthTest
+            inDrawSettings.color, inDrawSettings.duration, inDrawSettings.doDepthTest
         );
 
         theLastRectCornerPosition = theRectCornerPosition;
         theRectCornerPosition += theYSideVector;
         Debug.DrawLine(theLastRectCornerPosition, theRectCornerPosition,
-            inColor, inDuration, inDepthTest
+            inDrawSettings.color, inDrawSettings.duration, inDrawSettings.doDepthTest
         );
 
         theLastRectCornerPosition = theRectCornerPosition;
         theRectCornerPosition -= theXSideVector;
         Debug.DrawLine(theLastRectCornerPosition, theRectCornerPosition,
-            inColor, inDuration, inDepthTest
+            inDrawSettings.color, inDrawSettings.duration, inDrawSettings.doDepthTest
         );
 
         theLastRectCornerPosition = theRectCornerPosition;
         theRectCornerPosition -= theYSideVector;
         Debug.DrawLine(theLastRectCornerPosition, theRectCornerPosition,
-            inColor, inDuration, inDepthTest
+            inDrawSettings.color, inDrawSettings.duration, inDrawSettings.doDepthTest
         );
     }
 
-    public static void drawRectangle(
-        Vector2 inPosition, Vector2 inSize, float inRotation,
-        Color inColor, float inDuration)
-    {
-        XDebug.drawRectangle(inPosition, inSize, inRotation,
-            inColor, inDuration, true
-        );
-    }
-
-    public static void drawRectangle(
-        Vector2 inPosition, Vector2 inSize, float inRotation,
-        Color inColor)
-    {
-        XDebug.drawRectangle(inPosition, inSize, inRotation,
-            inColor, 0.0f
-        );
-    }
-
-    public static void drawRectangle(
-        Vector2 inPosition, Vector2 inSize, float inRotation)
-    {
-        XDebug.drawRectangle(inPosition, inSize, inRotation,
-            Color.white
-        );
+    public static void drawCross(Vector2 inPosition, Vector2 inSize, float inRotation) {
+        drawRectangle(inPosition, inSize, inRotation, DebugDrawSettings.defaultValue);
     }
 }

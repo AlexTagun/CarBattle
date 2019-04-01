@@ -6,6 +6,8 @@ public class WeaponGunLogic : WeaponLogic
 {
     //Fields
     //-Settings
+    public GameObject owner = null;
+
     private RotateToTargetAngleLogic _rotateLogic = null;
 
     private TransformHolderLogic.Point[] _shootingPoints = null;
@@ -59,15 +61,12 @@ public class WeaponGunLogic : WeaponLogic
         Vector2 theHitNormal = new Vector2();
         Collider2D theHittedCollider = null;
         foreach (RaycastHit2D theHit in theHits) {
-            Collider2D theHitCollider = theHit.collider;
-            Collider2D theOwnerCollider = getOwner().GetComponent<Collider2D>();
+            if (shouldIgnoreColliderOnHit(theHit.collider)) continue;
 
-            if (theHitCollider != theOwnerCollider) {
-                theHittedCollider = theHitCollider;
-                theHitPoint = theHit.point;
-                theHitNormal = theHit.normal;
-                break;
-            }
+            theHittedCollider = theHit.collider;
+            theHitPoint = theHit.point;
+            theHitNormal = theHit.normal;
+            break;
         }
 
         notifyEffectsAboutShoot(thePointWorld, theDiraction, theShootingDistance,
@@ -93,4 +92,9 @@ public class WeaponGunLogic : WeaponLogic
 
     //--Utils
     GameObject getOwner() { return transform.parent.gameObject; }
+
+    bool shouldIgnoreColliderOnHit(Collider2D inCollider) {
+        Collider2D[] theOwnerColliders = owner.GetComponentsInChildren<Collider2D>();
+        return (-1 != System.Array.IndexOf(theOwnerColliders, inCollider));
+    }
 }

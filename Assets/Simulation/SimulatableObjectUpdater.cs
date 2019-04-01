@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class SimulatableObjectUpdater : MonoBehaviour
 {
-    private RootSimulatableLogic _simulatableLogic = null;
+    private ISimulatableLogic _simulatableLogic = null;
 
     void Start() {
-        _simulatableLogic = gameObject.GetComponent<RootSimulatableLogic>();
+        _simulatableLogic = gameObject.GetComponent<ISimulatableLogic>();
+        _simulatableLogic.initialize();
     }
 
     void FixedUpdate() {

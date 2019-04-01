@@ -6,7 +6,7 @@ public class RotateToTargetAngleLogic : MonoBehaviour
     //Fields
     [SerializeField] private float _rotationSpeed = 5.0f;
 
-    [SerializeField] private float _targetAngle = 90.0f;
+    [SerializeField] private float _targetAngle = 0.0f;
 
     //-Runtime
     private LimitedFloatAngle _rotation = new LimitedFloatAngle(-180.0f, 180.0f);
@@ -14,7 +14,7 @@ public class RotateToTargetAngleLogic : MonoBehaviour
     //Methods
     //-API
     public void setTargetAngle(float inTargetAngle) {
-        _targetAngle = LimitedFloatAngle.getNormalizedAngle(inTargetAngle);
+        _targetAngle = XMath.getNormalizedAngle(inTargetAngle);
     }
 
     //-Implementation

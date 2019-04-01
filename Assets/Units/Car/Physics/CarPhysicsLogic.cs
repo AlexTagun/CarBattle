@@ -1,22 +1,11 @@
 ﻿using UnityEngine;
+using System;
 
 using Values;
 
-//Wheel Build Transform
-using WBT = XUtils.ArraysTransformPair<UnityEngine.GameObject, CarPhysicsLogic.WheelState>;
-
-//Wheel Copy Transform
-using WCT = XUtils.ArraysTransformPair<CarPhysicsLogic.WheelState, CarPhysicsLogic.WheelState>;
-
-public class CarPhysicsLogic : RootSimulatableLogic
+public class CarPhysicsLogic : ISimulatableLogic
 {
     //Fields
-    [SerializeField] private Rigidbody2D _rigidBody = null;
-
-    public GameObject[] _wheelTransforms;
-    public GameObject[] _drivingWheelTransforms;
-    public GameObject[] _controlWheelTransforms;
-
     public LimitedFloat.State GasValueSettings = new LimitedFloat.State(-10.0f, 30.0f);
     public float GasChangeSpeed = 0.3f;
 
@@ -26,8 +15,8 @@ public class CarPhysicsLogic : RootSimulatableLogic
 
     //-Runtime
     private WheelState[] _wheels = null;
-    private WheelState[] _drivingWheels = null;
-    private WheelState[] _controlWheels = null;
+    private int[] _drivingWheelIndices = null;
+    private int[] _controlWheelIndices = null;
 
     private LimitedFloat _gasValue;
     private bool _isGasWasChangedOnUpdate = false;
@@ -35,96 +24,120 @@ public class CarPhysicsLogic : RootSimulatableLogic
     private LimitedFloatAngle _steeringWheelValue;
     private bool _isSteeringWheelWasRotatedOnUpdate = false;
 
+    //--Cache
+    public Rigidbody2D _rigidBody = null;
+    private BoxCollider2D _collider = null;
+
     //Methods
-    public void setFrom(CarPhysicsLogic inLogic) {
-        _rigidBody.angularVelocity = inLogic._rigidBody.angularVelocity;
-        _rigidBody.velocity = inLogic._rigidBody.velocity;
-
-        XUtils.transformArray(
-            new WCT(inLogic._wheels, (WheelState[] Result) => _wheels = Result),
-            (WheelState inWheel) => new WheelState(inWheel),
-            new WCT[] {
-                new WCT(inLogic._drivingWheels, (WheelState[] Result) => _drivingWheels = Result),
-                new WCT(inLogic._controlWheels, (WheelState[] Result) => _controlWheels = Result),
-            }
-        );
-
-        _gasValue = new LimitedFloat(inLogic._gasValue);
-        _isGasWasChangedOnUpdate = inLogic._isGasWasChangedOnUpdate;
-
-        _steeringWheelValue = new LimitedFloatAngle(inLogic._steeringWheelValue);
-        _isSteeringWheelWasRotatedOnUpdate = inLogic._isSteeringWheelWasRotatedOnUpdate;
-    }
-
     public void applyGas() {
-        getGasValue().changeValue(GasChangeSpeed);
+        _gasValue.changeValue(GasChangeSpeed);
         _isGasWasChangedOnUpdate = true;
     }
 
     public void applyRevers() {
-        getGasValue().changeValue(-GasChangeSpeed);
+        _gasValue.changeValue(-GasChangeSpeed);
         _isGasWasChangedOnUpdate = true;
     }
 
     public void rotateSteeringWheelClockwise() {
-        getSteeringWheelValue().changeAngle(SteeringWheelSpeed);
+        _steeringWheelValue.changeAngle(SteeringWheelSpeed);
         _isSteeringWheelWasRotatedOnUpdate = true;
     }
 
     public void rotateSteeringWheelCounterClockwise() {
-        getSteeringWheelValue().changeAngle(-SteeringWheelSpeed);
+        _steeringWheelValue.changeAngle(-SteeringWheelSpeed);
         _isSteeringWheelWasRotatedOnUpdate = true;
     }
 
-    bool _isSimulation = false;
-
-    public override GameObject createSimulation() {
-        GameObject theSimulation = GameObject.Instantiate(gameObject);
-
-        theSimulation.GetComponent<CarPhysicsLogic>().setFrom(this);
-        theSimulation.GetComponent<CarPhysicsLogic>()._rigidBody =
-                theSimulation.GetComponent<Rigidbody2D>();
-
-        Destroy(theSimulation.GetComponent<SimulatableObjectUpdater>());
-        Destroy(theSimulation.GetComponent<CarFutureSimulationTest>());
-        Destroy(theSimulation.GetComponent<InputCarController>());
-
-        theSimulation.GetComponent<CarPhysicsLogic>()._isSimulation = true;
-
-        return theSimulation;
+    //AI helping Accessors
+    public bool isRotatingByClockwice() {
+        return (_rigidBody.angularVelocity > 0.0f);
     }
 
-    override public void simulate() {
-        base.simulate();
-
-        simulate_control();
-        simulate_passive();
-
-        if (!_isSimulation) {
-            debugDraw(Color.red, 2.0f);
-        }
-    }
-
-
-    public void debugDraw(Color inColor, float inDuration) {
-        var theBoxCollider = gameObject.GetComponent<BoxCollider2D>();
-        Transform theTransform = gameObject.transform;
-        XDebug.drawRectangle(
-            theTransform.position, theBoxCollider.size, theTransform.rotation.eulerAngles.z,
-            inColor, inDuration
-        );
-    }
-
-    public void debugDraw() {
-        debugDraw(Color.green, 0.0f);
+    public LimitedFloat getGasValue() {
+        return _gasValue;
     }
 
     //-Implementation
-    private void Start() {
-        createWheels();
+    //[ISimulatableLogic]
+    protected override void implementation_initialize() {
+        implementation_initialize_wheels();
+        implementation_initialize_state();
+        implementation_initialize_componentReferences();
+    }
 
+    protected void implementation_initialize_wheels() {
+        _wheels = new WheelState[4]{
+            new WheelState(new Vector2(-0.8f,  0.3f)), new WheelState(new Vector2(0.8f,  0.3f)),
+            new WheelState(new Vector2(-0.8f, -0.3f)), new WheelState(new Vector2(0.8f, -0.3f)),
+        };
+
+        _drivingWheelIndices = new int[2] { 0, 2 };
+        _controlWheelIndices = new int[2] { 1, 3 };
+    }
+
+    protected void implementation_initialize_state() {
         _gasValue = new LimitedFloat(GasValueSettings);
         _steeringWheelValue = new LimitedFloatAngle(SteeringWheelValueSettings);
+    }
+
+    protected void implementation_initialize_componentReferences() {
+        _rigidBody = GetComponent<Rigidbody2D>();
+        _collider = GetComponent<BoxCollider2D>();
+    }
+
+    protected override GameObject implementation_createSimulation() {
+        GameObject theSimulationObject = GameObject.Instantiate(gameObject);
+        Destroy(theSimulationObject.GetComponent<SimulatableObjectUpdater>());
+        Destroy(theSimulationObject.GetComponent<InputCarController>());
+        //Destroy(theSimulationObject.GetComponent<BoxCollider2D>());
+
+        var theSimulationLogic = findSimulatableInGameObject<CarPhysicsLogic>(theSimulationObject);
+        theSimulationLogic.implementation_initialize_wheels();
+        theSimulationLogic.implementation_initialize_state();
+        theSimulationLogic.implementation_initialize_componentReferences();
+        theSimulationLogic.setSimulationFrom(this);
+
+        return theSimulationObject;
+    }
+
+    protected override void implementation_setSimulationFromLogic(
+        ISimulatableLogic inLogicToSetFrom)
+    {
+        CarPhysicsLogic theLogicToSetFrom = inLogicToSetFrom as CarPhysicsLogic;
+        if (!theLogicToSetFrom) {
+            //TODO: Make universal though for incorrect type casts
+            throw new Exception("Simulation object has no compitable simulatable logic");
+        }
+        GameObject theGameObjectToSetFrom = theLogicToSetFrom.gameObject;
+
+        //Set rigid body
+        var theRigidBodyToSetFrom = theGameObjectToSetFrom.GetComponent<Rigidbody2D>();
+
+        _rigidBody.angularVelocity = theRigidBodyToSetFrom.angularVelocity;
+        _rigidBody.velocity = theRigidBodyToSetFrom.velocity;
+
+        //Set logic state
+        _gasValue = theLogicToSetFrom._gasValue;
+        _isGasWasChangedOnUpdate = theLogicToSetFrom._isGasWasChangedOnUpdate;
+
+        _steeringWheelValue = theLogicToSetFrom._steeringWheelValue;
+        _isSteeringWheelWasRotatedOnUpdate = theLogicToSetFrom._isSteeringWheelWasRotatedOnUpdate;
+    }
+
+    protected override void implementation_simulate() {
+        simulate_control();
+        simulate_passive();
+    }
+
+    protected override void implementation_debugDraw(XDebug.DebugDrawSettings inDrawSettings) {
+        var theBoxCollider = gameObject.GetComponent<BoxCollider2D>();
+        Transform theTransform = gameObject.transform;
+
+        XDebug.drawRectangle(
+            theTransform.position, theBoxCollider.size, theTransform.rotation.eulerAngles.z,
+            inDrawSettings
+        );
     }
 
     //--Simulation
@@ -148,7 +161,7 @@ public class CarPhysicsLogic : RootSimulatableLogic
             } else {
                 _gasValue.setValue(0.0f);
             }
-            _gasValue.setValue(0.0f);
+            //_gasValue.setValue(0.0f);
         }
         _isGasWasChangedOnUpdate = false;
     }
@@ -167,18 +180,18 @@ public class CarPhysicsLogic : RootSimulatableLogic
     }
 
     private void simulate_control_apply_gas() {
-        float theGasValue = getGasValue().getValue();
+        float theGasValue = _gasValue.getValue();
         if (Mathf.Approximately(theGasValue, 0.0f)) return;
 
-        foreach (WheelState theWheelState in getDrivingWheels()) {
-            applyGasForWheel(theWheelState, theGasValue);
+        foreach (int theIndex in _drivingWheelIndices) {
+            applyGasForWheel(_wheels[theIndex], theGasValue);
         }
     }
 
     private void simulate_control_apply_steeringWheelRotation() {
         float theSteeringWheelRotation = _steeringWheelValue.getAngle();
-        foreach (WheelState theWheelState in getControlWheels()) {
-            theWheelState.setRotation(theSteeringWheelRotation);
+        foreach (int theIndex in _controlWheelIndices) {
+            _wheels[theIndex].setRotation(theSteeringWheelRotation);
         }
     }
 
@@ -188,7 +201,7 @@ public class CarPhysicsLogic : RootSimulatableLogic
     }
 
     private void simulate_passive_wheelsResistance() {
-        foreach (WheelState theWheel in getAllWheels()) {
+        foreach (WheelState theWheel in _wheels) {
             applyResistanceForWheel(theWheel);
         }
     }
@@ -248,50 +261,20 @@ public class CarPhysicsLogic : RootSimulatableLogic
         return transform.rotation.eulerAngles.z + inWheel.getRotation();
     }
 
-    //--State access
-    private WheelState[] getAllWheels() { return _wheels; }
-    private WheelState[] getDrivingWheels() { return _drivingWheels; }
-    private WheelState[] getControlWheels() { return _controlWheels; }
-
-    Rigidbody2D getRigidbody() { return _rigidBody; }
-
-    public ref LimitedFloat getGasValue() { return ref _gasValue; }
-    public ref LimitedFloatAngle getSteeringWheelValue() { return ref _steeringWheelValue; }
-
-    //--Initialization utils
-    private void createWheels() {
-        XUtils.transformArray(
-            new WBT(_wheelTransforms, (WheelState[] Result) => _wheels = Result),
-            (GameObject inObject) => new WheelState(inObject.GetComponent<TransformHolderLogic>()),
-            new WBT[] {
-                new WBT(_drivingWheelTransforms, (WheelState[] Result) => _drivingWheels = Result),
-                new WBT(_controlWheelTransforms, (WheelState[] Result) => _controlWheels = Result),
-            }
-        );
-
-        foreach (GameObject theWheelTransform in _wheelTransforms) {
-            var theTransformHolder = theWheelTransform.GetComponent<TransformHolderLogic>();
-            theTransformHolder.destroy();
-        }
-        _wheelTransforms = null;
-        _drivingWheelTransforms = null;
-        _controlWheelTransforms = null;
-    }
-
     //---Types
-    public class WheelState
+    private struct WheelState
     {
-        public WheelState(TransformHolderLogic inHolder) {
-            _point = inHolder.getTransform(false);
+        public WheelState(Vector2 inPosition, float inRotation = 0.0f) {
+            _position = inPosition;
+            _rotation = inRotation;
         }
 
-        public WheelState(WheelState inWheelState) { _point.set(inWheelState._point); }
+        public Vector2 getPosition() { return _position; }
+        public float getRotation() { return _rotation; }
 
-        public Vector2 getPosition() { return _point.position; }
-        public float getRotation() { return _point.rotation; }
+        public void setRotation(float inRotation) { _rotation = inRotation; }
 
-        public void setRotation(float inRotation) { _point.rotation = inRotation; }
-
-        TransformHolderLogic.Point _point;
+        Vector2 _position;
+        float _rotation;
     }
 }

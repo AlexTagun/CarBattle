@@ -27,7 +27,7 @@ public class InputCarController : MonoBehaviour
         _weaponGunsLogic = gameObject.GetComponentsInChildren<WeaponGunLogic>();
     }
 
-    private void Update() {
+    private void FixedUpdate() {
         Update_Input();
         Update_CarControl();
     }
@@ -39,25 +39,17 @@ public class InputCarController : MonoBehaviour
     }
 
     private void Update_Input_Mouse() {
-        if (Input.GetMouseButtonDown(0)) _isMouseButtonPressed = true;
-        if (Input.GetMouseButtonUp(0)) _isMouseButtonPressed = false;
+        _isMouseButtonPressed = Input.GetMouseButton(0);
 
         Vector2 thePosition = transform.position;
         _carRelatedMousePosition = getMouseWorldPosition() - thePosition;
     }
 
     private void Update_Input_Keyboard() {
-        if (Input.GetKeyDown(KeyCode.S)) _isReversIsPressed = true;
-        if (Input.GetKeyUp(KeyCode.S)) _isReversIsPressed = false;
-
-        if (Input.GetKeyDown(KeyCode.W)) _isGasIsPressed = true;
-        if (Input.GetKeyUp(KeyCode.W)) _isGasIsPressed = false;
-
-        if (Input.GetKeyDown(KeyCode.A)) _isClockwiseRotatePressed = true;
-        if (Input.GetKeyUp(KeyCode.A)) _isClockwiseRotatePressed = false;
-
-        if (Input.GetKeyDown(KeyCode.D)) _isCounterClockwiseRotatePressed = true;
-        if (Input.GetKeyUp(KeyCode.D)) _isCounterClockwiseRotatePressed = false;
+        _isReversIsPressed = Input.GetKey(KeyCode.S);
+        _isGasIsPressed = Input.GetKey(KeyCode.W);
+        _isClockwiseRotatePressed = Input.GetKey(KeyCode.A);
+        _isCounterClockwiseRotatePressed = Input.GetKey(KeyCode.D);
     }
 
     //-Car control
