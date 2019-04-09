@@ -101,8 +101,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0, b: 0, a: 0.7921569}
-      key1: {r: 0.8867924, g: 0.8287354, b: 0.6065326, a: 0.75537485}
+      key0: {r: 1, g: 0, b: 0, a: 1}
+      key1: {r: 0.8862745, g: 0.6306856, b: 0.60784316, a: 1}
       key2: {r: 0.35801888, g: 0.34751692, b: 0.29221922, a: 0.59607846}
       key3: {r: 1, g: 0.13431834, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -118,7 +118,7 @@ LineRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 21010
+      atime1: 65535
       atime2: 62644
       atime3: 0
       atime4: 0
@@ -127,7 +127,7 @@ LineRenderer:
       atime7: 0
       m_Mode: 0
       m_NumColorKeys: 4
-      m_NumAlphaKeys: 3
+      m_NumAlphaKeys: 2
     numCornerVertices: 0
     numCapVertices: 2
     alignment: 0

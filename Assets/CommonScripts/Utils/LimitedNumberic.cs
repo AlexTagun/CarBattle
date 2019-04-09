@@ -32,6 +32,9 @@ namespace Values
             public float Value;
         }
 
+        public delegate void OnAchievedMinimum();
+        public delegate void OnAchievedMaximum();
+
         //Methods
         //-Initialization
         public LimitedFloat(float inValue = 0.0f)
@@ -41,9 +44,17 @@ namespace Values
         public LimitedFloat(ZeroBasedState inState)
             : this(new State(0.0f, inState.Maximum, inState.Value)) { }
 
-        public LimitedFloat(State inState) { _state = inState; normalizeState(); }
+        public LimitedFloat(State inState) {
+            _state = inState;
 
-        public LimitedFloat(LimitedFloat inValue) { _state = inValue._state; normalizeState(); }
+            onAchievedMinimum = new OnAchievedMinimum(() => {});
+            onAchievedMaximum = new OnAchievedMaximum(() => { });
+
+            normalizeState();
+        }
+
+        public LimitedFloat(LimitedFloat inValue)
+            : this(inValue._state) { }
 
         //-Accessors
         public float getMinimum() { return _state.Minimum; }
@@ -74,7 +85,20 @@ namespace Values
 
         public float getValue() { return _state.Value; }
         public float setValue(float inNewValue) {
-            return _state.Value = Mathf.Clamp(inNewValue, getMinimum(), getMaximum());
+            float theOldValue = _state.Value;
+            float theNewValue = Mathf.Clamp(inNewValue, getMinimum(), getMaximum());
+            _state.Value = theNewValue;
+
+            if (theOldValue != theNewValue) {
+                if (getMinimum() == theNewValue) {
+                    onAchievedMinimum?.Invoke();
+                }
+                if (getMaximum() == theNewValue) {
+                    onAchievedMaximum?.Invoke();
+                }
+            }
+
+            return theNewValue;
         }
         public float changeValue(float inValueDelta) {
             float theOldValue = getValue();
@@ -87,6 +111,10 @@ namespace Values
 
         public float getValueFromMaximum() { return getMaximum() - getValue(); }
         public float getValuePercenFromMaximum() { return getValueFromMaximum()/getRange(); }
+
+        //-Events
+        public event OnAchievedMinimum onAchievedMinimum;
+        public event OnAchievedMaximum onAchievedMaximum;
 
         //-Implementation
         //--Utils

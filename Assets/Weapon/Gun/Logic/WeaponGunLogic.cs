@@ -79,13 +79,18 @@ public class WeaponGunLogic : WeaponLogic
 
         float theForce = 30.0f;
         theShootedRigidBody.AddForceAtPosition(theDiraction * theForce, theHitPoint);
+
+        var theDurability = theShootedRigidBody.gameObject.GetComponent<DurabilityComponent>();
+        if (theDurability) {
+            theDurability.changeHitPoints(-5.0f);
+            Debug.Log(theDurability.getHitPoints());
+        }
     }
 
     //--Effects
     void notifyEffectsAboutShoot(Vector2 inStart, Vector2 inDiraction, float inDistance, Vector2 inHitPoint, bool inHitted) {
         Vector2 theEndPoint = inHitted ? inHitPoint : inStart + inDiraction * inDistance;
-        foreach (WeaponGunEffectInterface theInterface in _effectInterfaces)
-        {
+        foreach (WeaponGunEffectInterface theInterface in _effectInterfaces) {
             theInterface.onShoot(inStart, theEndPoint, inHitted);
         }
     }
