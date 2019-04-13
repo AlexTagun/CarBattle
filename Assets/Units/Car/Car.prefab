@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5689279845555139014}
   - component: {fileID: 1068423304111612222}
   - component: {fileID: 570934312364172410}
+  - component: {fileID: 8306370484967409777}
   m_Layer: 0
   m_Name: Car
   m_TagString: Untagged
@@ -181,7 +182,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHitPoints: 100
-  HitPoints: 0
 --- !u!114 &570934312364172410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,5 +192,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26c1c0daaab5a0e43834d84c354a4488, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8306370484967409777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8118974707673485518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5554929a91f6e445b565e444663a360, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

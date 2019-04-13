@@ -5,19 +5,10 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField]
-    private AmmoPanel ammoPanel;
+    [SerializeField] private AmmoPanel ammoPanel;
 
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    void Start() { }
+    void Update() { }
 
     public void setAmmoPanelData(int clipCapacity, int ammoQuantity) {
         ammoPanel.ClipCapacity = clipCapacity;

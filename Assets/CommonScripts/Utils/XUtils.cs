@@ -72,4 +72,18 @@ public class XUtils : MonoBehaviour
             inRelatedTransforms[theIndex].toAssigning(theRelatedResultBuilders[theIndex].getArray());
         }
     }
+
+    public static void swap<T_Type>(ref T_Type inValueRefA, ref T_Type inValueRefB) {
+        T_Type theSwapValue = inValueRefA;
+        inValueRefA = inValueRefB;
+        inValueRefB = theSwapValue;
+    }
+
+    public static bool isValid(GameObject inObject) {
+        return !!inObject;
+    }
+
+    public static bool isValid(Component inComponent) {
+        return !!inComponent && isValid(inComponent.gameObject);
+    }
 }

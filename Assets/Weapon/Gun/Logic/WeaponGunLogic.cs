@@ -83,7 +83,6 @@ public class WeaponGunLogic : WeaponLogic
         var theDurability = theShootedRigidBody.gameObject.GetComponent<DurabilityComponent>();
         if (theDurability) {
             theDurability.changeHitPoints(-5.0f);
-            Debug.Log(theDurability.getHitPoints());
         }
     }
 
