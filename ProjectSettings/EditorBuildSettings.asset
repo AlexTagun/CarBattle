@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MainScene.unity
     guid: 689cdbdba2255c34d835b5e4aed1f9c1
   - enabled: 0
-    path: Assets/Scenes/MenuScene.unity
+    path: Assets/CarCity/Scenes/City.unity
     guid: 1e1716649c0d8194c85fa22ceffc8476
   - enabled: 1
     path: Assets/Scenes/CarTestdrive/CarTestdrive.unity
