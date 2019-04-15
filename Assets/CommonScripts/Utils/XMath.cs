@@ -49,4 +49,11 @@ public class XMath
         if (theDelta < 0.0f) theDelta += 360;
         return theDelta;
     }
+
+    //Transform
+    public static void assignTransform(Transform outTo, Transform inFrom) {
+        outTo.position = inFrom.position;
+        outTo.rotation = inFrom.rotation;
+        outTo.localScale = inFrom.localScale;
+    }
 }

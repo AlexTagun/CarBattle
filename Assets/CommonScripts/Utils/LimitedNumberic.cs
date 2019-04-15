@@ -90,10 +90,10 @@ namespace Values
             _state.Value = theNewValue;
 
             if (theOldValue != theNewValue) {
-                if (getMinimum() == theNewValue) {
+                if (isValueMinimum()) {
                     onAchievedMinimum?.Invoke();
                 }
-                if (getMaximum() == theNewValue) {
+                if (isValueMaximum()) {
                     onAchievedMaximum?.Invoke();
                 }
             }
@@ -112,6 +112,9 @@ namespace Values
         public float getValueFromMaximum() { return getMaximum() - getValue(); }
         public float getValuePercenFromMaximum() { return getValueFromMaximum()/getRange(); }
 
+        public bool isValueMaximum() { return getValue() == getMaximum(); }
+        public bool isValueMinimum() { return getValue() == getMinimum(); }
+
         //-Events
         public event OnAchievedMinimum onAchievedMinimum;
         public event OnAchievedMaximum onAchievedMaximum;
@@ -120,9 +123,7 @@ namespace Values
         //--Utils
         private void normalizeState() {
             if (_state.Minimum > _state.Maximum) {
-                float theTmp = _state.Minimum;
-                _state.Minimum = _state.Maximum;
-                _state.Maximum = theTmp;
+                XUtils.swap(ref _state.Minimum, ref _state.Maximum);
             }
             setValue(_state.Value);
         }

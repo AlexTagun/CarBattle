@@ -37,6 +37,6 @@ public class BuildTimer : MonoBehaviour
     }
 
     private void OnDestroy() {
-        GetComponentInParent<Builder>().OnTimerDestroy();
+        //GetComponentInParent<Builder>().OnTimerDestroy();
     }
 }

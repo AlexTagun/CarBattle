@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 public class XUtils : MonoBehaviour
 {
-    public static bool arrayContains<T_Type>(T_Type[] inArray, T_Type inValue)
-    {
+    public static bool arrayContains<T_Type>(T_Type[] inArray, T_Type inValue) {
         return -1 != System.Array.IndexOf(inArray, inValue);
     }
 
@@ -85,5 +84,38 @@ public class XUtils : MonoBehaviour
 
     public static bool isValid(Component inComponent) {
         return !!inComponent && isValid(inComponent.gameObject);
+    }
+
+    public static bool isValueInRange(int inValue, int inMin, int inMax) {
+        return inValue >= inMin && inValue <= inMax;
+    }
+
+    public struct ChangesTracker {
+        public void increaseChanges() { ++_changesCounter; }
+        public bool Equals(ChangesTracker inOtherTracker) {
+            return _changesCounter == inOtherTracker._changesCounter;
+        }
+
+        private int _changesCounter;
+    }
+
+    public static void check(bool inCondition, string inErrorMessage) {
+        if (inCondition) return;
+        throw new System.Exception(inErrorMessage);
+    }
+    public static void check(bool inCondition) { check(inCondition, "<No message>"); }
+
+    public static T_Type verify<T_Type>(T_Type inReference, string inErrorMessage)
+        where T_Type : Object
+    {
+        if (null != inReference) return inReference;
+        throw new System.Exception(inErrorMessage);
+    }
+    public static T_Type verify<T_Type>(T_Type inReference) where T_Type : Object {
+        return verify<T_Type>(inReference, "<No message>");
+    }
+
+    public static Vector2 getMouseWorldPosition() {
+        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 }

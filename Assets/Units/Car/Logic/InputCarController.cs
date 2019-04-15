@@ -40,9 +40,8 @@ public class InputCarController : MonoBehaviour
 
     private void Update_Input_Mouse() {
         _isMouseButtonPressed = Input.GetMouseButton(0);
-
-        Vector2 thePosition = transform.position;
-        _carRelatedMousePosition = getMouseWorldPosition() - thePosition;
+        _carRelatedMousePosition =
+            XUtils.getMouseWorldPosition() - (Vector2)transform.position;
     }
 
     private void Update_Input_Keyboard() {
@@ -73,10 +72,5 @@ public class InputCarController : MonoBehaviour
                 Mathf.Atan2(_carRelatedMousePosition.y, _carRelatedMousePosition.x) * Mathf.Rad2Deg
             );
         }
-    }
-
-    //-Utils
-    private Vector2 getMouseWorldPosition() {
-        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 }

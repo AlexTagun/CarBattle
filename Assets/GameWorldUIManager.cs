@@ -35,8 +35,8 @@ public class GameWorldUIManager : MonoBehaviour
     void Update() {
         if (XUtils.isValid(TestObjectToAttach)) {
             var theDurability = TestObjectToAttach.GetComponent<DurabilityComponent>();
-            testHealthbar.GetComponent<HealthbarObject>().set(
-                theDurability.getHitPoints(), theDurability.getMaxHitPoints()
+            testHealthbar.GetComponent<LimitedValueStripeIndicatorObject>().set(
+                0.0f, theDurability.getMaxHitPoints(), theDurability.getHitPoints()
             );
         }
     }

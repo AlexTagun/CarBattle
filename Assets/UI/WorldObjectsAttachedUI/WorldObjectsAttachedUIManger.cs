@@ -18,6 +18,15 @@ public class WorldObjectsAttachedUIManger : MonoBehaviour
         _uiAttaches_toWorldObjectAttachPoint.add(theNewAttach);
     }
 
+    public void attach(
+        GameObject inUI, GameObject inGameObject, bool inDestroyUIWithObject = true)
+    {
+        var theAttachPoint = XUtils.verify(
+            inGameObject.GetComponent<WorldObjectAttachPoint>()
+        );
+        attach(inUI, theAttachPoint, inDestroyUIWithObject);
+    }
+
     //-Implementation
     void Start() {
         _canvas = gameObject.GetComponent<Canvas>();
@@ -50,13 +59,6 @@ public class WorldObjectsAttachedUIManger : MonoBehaviour
 
 
     private Vector2 getViewportNormalizedPositionForWorldPosition(Vector3 inWorldPosition) {
-        //Vector2 theViewportPosition = ;
-        //
-        //Debug.Log(inWorldPosition);
-        //Debug.Log(theViewportPosition.x + " : " + _camera.pixelWidth + " : " +
-        //    theViewportPosition.y + " : " + _camera.pixelHeight
-        //);
-
         return _camera.WorldToViewportPoint(inWorldPosition);
     }
 

@@ -18,7 +18,6 @@ public class CameraMover : MonoBehaviour
 
     void Update() {
         if (Input.GetMouseButtonDown(0)) {
-            Debug.Log("DOWN");
             _isPicked = true;
             _oldPos = transform.position;
             _screenPosition = Camera.main.ScreenToViewportPoint(Input.mousePosition);
@@ -26,7 +25,6 @@ public class CameraMover : MonoBehaviour
         if (Input.GetMouseButtonUp(0)) {
             _isPicked = false;
         }
-        Debug.Log(transform.position);
         OnMouseMove();
     }
 
