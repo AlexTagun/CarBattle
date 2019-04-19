@@ -116,6 +116,7 @@ public class XUtils : MonoBehaviour
     }
 
     public static Vector2 getMouseWorldPosition() {
+        if (!Camera.main) return new Vector2();
         return Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4846084676013720963}
   - component: {fileID: 8159237517259245148}
   m_Layer: 0
-  m_Name: Healthbar
+  m_Name: LimitedValueStripeIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,8 +89,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4380a099bd73a4a4780d71ad25731d5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _healthStripeTransform: {fileID: 2450827131100684436}
-  _healthText: {fileID: 8492201340396632312}
+  _valueStripeTransform: {fileID: 2450827131100684436}
+  _valueText: {fileID: 8492201340396632312}
 --- !u!1 &4024476823707064057
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 995744504509573828}
   - component: {fileID: 8492201340396632312}
   m_Layer: 0
-  m_Name: LifeText
+  m_Name: ValueText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -169,7 +169,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 1000/1000
+  m_Text: <NO TEXT>
 --- !u!1 &8763013409160833164
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 8174448862693916420}
   - component: {fileID: 1007837536419933709}
   m_Layer: 0
-  m_Name: HealthStripe
+  m_Name: ValueStripe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

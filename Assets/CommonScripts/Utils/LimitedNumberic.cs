@@ -107,10 +107,18 @@ namespace Values
         }
 
         public float getValueFromMinimum() { return getValue() - getMinimum(); }
-        public float getValuePercentFromMinimum() { return getValueFromMinimum()/getRange(); }
+        public float getValuePercentFromMinimum() {
+            return XMath.getValueRatioInRange(
+                getMinimum(), getMinimum(), getValueFromMinimum()
+            );
+        }
 
         public float getValueFromMaximum() { return getMaximum() - getValue(); }
-        public float getValuePercenFromMaximum() { return getValueFromMaximum()/getRange(); }
+        public float getValuePercenFromMaximum() {
+            return XMath.getValueRatioInRange(
+                getMinimum(), getMinimum(), getValueFromMaximum()
+            );
+        }
 
         public bool isValueMaximum() { return getValue() == getMaximum(); }
         public bool isValueMinimum() { return getValue() == getMinimum(); }

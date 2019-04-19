@@ -4,15 +4,12 @@ using Values;
 public class CarCityObject : MonoBehaviour
 {
     //Methods
-    //-API
-    public ConstructionSiteObject startConstructionFromBuildingPlan(
-        BuildingPlanObject inBuildingPlan)
-    {
-        ConstructionSiteObject theConstructionSiteObject =
-            inBuildingPlan.startConstruction();
-        _constructionSites.add(theConstructionSiteObject);
-        return theConstructionSiteObject;
-    }
+    //-State getters
+    public float getHitPoints() { return _hitPoints.getValue(); }
+    public float getMaxHitPoints() { return _hitPoints.getMaximum(); }
+
+    public float getEnergy() { return _energy.getValue(); }
+    public float getMaxEnergy() { return _energy.getMaximum(); }
 
     //-Crew management
     public int getTotalCrewMembersCount() {
@@ -32,6 +29,16 @@ public class CarCityObject : MonoBehaviour
 
     public CrewMember getFirstFreeCrewMember() {
         return _freeCrewMembers.getFirstElement().getValue(false);
+    }
+
+    //-Construction
+    public ConstructionSiteObject startConstructionFromBuildingPlan(
+        BuildingPlanObject inBuildingPlan)
+    {
+        ConstructionSiteObject theConstructionSiteObject =
+            inBuildingPlan.startConstruction();
+        _constructionSites.add(theConstructionSiteObject);
+        return theConstructionSiteObject;
     }
 
     //-Implementation
@@ -72,7 +79,9 @@ public class CarCityObject : MonoBehaviour
     }
 
     //Fields
+    LimitedFloat _hitPoints = new LimitedFloat(0.0f, 100.0f, 100.0f);
     LimitedFloat _energy = new LimitedFloat(0.0f, 0.0f);
+
     LimitedFloat _metal = new LimitedFloat(0.0f, float.MaxValue);
 
     FastArray<CrewMember> _crewMembers = new FastArray<CrewMember>();

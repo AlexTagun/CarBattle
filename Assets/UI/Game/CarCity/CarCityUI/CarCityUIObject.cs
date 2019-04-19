@@ -4,9 +4,11 @@ using UnityEngine.UI;
 public class CarCityUIObject : MonoBehaviour
 {
     public CarCityObject carCity = null;
-    public GameObject constructionUIPrefab = null;
 
+    public Button goToWorldButton = null;
     public CarCityResourcesUIObject carCityResourcesUI = null;
+
+    public GameObject constructionUIPrefab = null; //TODO: Replace with full implemented construction UI
 
     void Start() {
         XUtils.verify(buildButton).onClick.AddListener(startBuildingPlan);
@@ -15,6 +17,10 @@ public class CarCityUIObject : MonoBehaviour
         _worldObjectsAttachedUIManger = XUtils.verify(
             gameObject.GetComponent<WorldObjectsAttachedUIManger>()
         );
+
+        XUtils.verify(goToWorldButton).onClick.AddListener(()=>{
+            onClickedGoToWorld?.Invoke();
+        });
     }
 
     void Update() {
@@ -64,6 +70,9 @@ public class CarCityUIObject : MonoBehaviour
     }
 
     //Fields
+    public delegate void OnClickedGoToWorld();
+    public OnClickedGoToWorld onClickedGoToWorld;
+
     private WorldObjectsAttachedUIManger _worldObjectsAttachedUIManger = null;
 
     //Test {

@@ -32,6 +32,13 @@ public class XMath
         return inValueA * inValueB >= 0.0f;
     }
 
+    public static float getValueRatioInRange(
+        float inMinimum, float inMaximum, float inValue, float inMinimumRange = 0.001f)
+    {
+        float theRange = inMaximum - inMinimum;
+        return equalsWithPrecision(theRange, 0.0f, inMinimumRange) ? 0.0f : inValue / theRange;
+    }
+
     //Angles
     public static float getNearestAngleBetweenPoints(Vector2 inPointFrom, Vector2 inPointTo) {
         Vector2 theDelta = inPointTo - inPointFrom;

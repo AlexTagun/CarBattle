@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class WorldObjectsAttachedUIManger : MonoBehaviour
 {
-    private Canvas _canvas = null;
-    public Camera _camera = null;
-
     //Methods
     //-API
     public void attach(
@@ -28,10 +25,6 @@ public class WorldObjectsAttachedUIManger : MonoBehaviour
     }
 
     //-Implementation
-    void Start() {
-        _canvas = gameObject.GetComponent<Canvas>();
-    }
-
     void Update() {
         _uiAttaches_toWorldObjectAttachPoint.iterateWithRemove(
             (UIAttach_ToWorldObjectAttachPoint inAttach) =>
@@ -59,7 +52,8 @@ public class WorldObjectsAttachedUIManger : MonoBehaviour
 
 
     private Vector2 getViewportNormalizedPositionForWorldPosition(Vector3 inWorldPosition) {
-        return _camera.WorldToViewportPoint(inWorldPosition);
+        if (!Camera.main) return new Vector2();
+        return Camera.main.WorldToViewportPoint(inWorldPosition);
     }
 
     private struct UIAttach_ToWorldObjectAttachPoint
@@ -81,8 +75,6 @@ public class WorldObjectsAttachedUIManger : MonoBehaviour
         public bool destroyUIWithObject;
     }
 
-
-    //TODO: Replace with own-maded "Deque" or "FastArray" method based on array with swaps
     FastArray<UIAttach_ToWorldObjectAttachPoint> _uiAttaches_toWorldObjectAttachPoint =
         new FastArray<UIAttach_ToWorldObjectAttachPoint>();
 }

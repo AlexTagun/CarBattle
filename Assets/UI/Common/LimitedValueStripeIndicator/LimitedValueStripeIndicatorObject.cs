@@ -5,17 +5,14 @@ using Values;
 
 public class LimitedValueStripeIndicatorObject : MonoBehaviour
 {
-    public RectTransform _healthStripeTransform = null;
-    public Text _healthText = null;
+    public RectTransform _valueStripeTransform = null;
+    public Text _valueText = null;
 
     public void set(float inMinValue, float inMaxValue, float inValue) {
-        _value.set(inMinValue, inMaxValue, inValue);
-        _healthText.text = inValue.ToString("0");
+        _valueText.text = inValue.ToString("0");
 
-        Vector2 theAnchorMax = _healthStripeTransform.anchorMax;
-        theAnchorMax.x = _value.getValuePercentFromMinimum();
-        _healthStripeTransform.anchorMax = theAnchorMax;
+        Vector2 theAnchorMax = _valueStripeTransform.anchorMax;
+        theAnchorMax.x = XMath.getValueRatioInRange(inMinValue, inMaxValue, inValue);
+        _valueStripeTransform.anchorMax = theAnchorMax;
     }
-
-    private LimitedFloat _value;
 }
