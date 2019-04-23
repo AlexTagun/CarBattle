@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0545eb5e9ecbbf341a773dc3249e18ce, type: 3}
+  m_Name: PowerPlantBuildingScheme
+  m_EditorClassIdentifier: 
+  buildingPlan: {fileID: 8831803489074886642, guid: 05e071c9469b0e745ac1995da2523b85,
+    type: 3}
+  constructionSite: {fileID: 6876747019640016345, guid: e70063a790dea5544ba9f30be12f16c1,
+    type: 3}
+  building: {fileID: 4336224274220124602, guid: b06dc3a6fe1087c42a3e481afcc211f3,
+    type: 3}
+  buildingName: Power plant

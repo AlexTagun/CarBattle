@@ -298,9 +298,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db14c5bc3b601964eac8b736aec25a35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carCity: {fileID: 0}
-  goToCarCityButton: {fileID: 5252627469169634776}
-  healthAndEnergyBar: {fileID: 7373188131550240180}
+  _carCity: {fileID: 0}
+  _goToCarCityButton: {fileID: 5252627469169634776}
+  _healthAndEnergyBar: {fileID: 7373188131550240180}
 --- !u!114 &400610271636410445
 MonoBehaviour:
   m_ObjectHideFlags: 0

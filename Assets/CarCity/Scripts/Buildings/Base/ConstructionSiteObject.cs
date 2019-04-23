@@ -7,10 +7,8 @@ using Values;
 public class ConstructionSiteObject : MonoBehaviour
 {
     //Settings
-    public float buildPointsToConstruct = 100.0f;
+    public float buildPointsToConstruct = 60.0f;
     public int maxWorkersToAssign = 6;
-
-    public GameObject buildPrefab = null;
 
     //Methods
     //-API
@@ -48,33 +46,31 @@ public class ConstructionSiteObject : MonoBehaviour
     }
 
     //-Implementation
-    //TODO: Make accessable only by CarCity
-    internal BuildingObject updateConstruction(float inDeltaTime) {
-        foreach (CrewMember theCrewMember in _workers)
-        {
-            _buildPoints.changeValue(
-                theCrewMember.getBuildPointsPerUpdate(inDeltaTime)
-            );
-        }
+    //TODO: Make accessable only by CrewMember
+    internal BuildingObject constructionStep(
+        float inBuildPoints)
+    {
+        _buildPoints.changeValue(inBuildPoints);
 
         if (!_buildPoints.isValueMaximum()) return null;
 
         Destroy(gameObject);
-        return spawnBuilding();
+        return XUtils.createObject(
+            getBuildingScheme().building, transform
+        );
     }
 
     void Awake() {
         _buildPoints = new LimitedFloat(0.0f, buildPointsToConstruct);
-        XUtils.check(buildPrefab);
     }
 
-    private BuildingObject spawnBuilding() {
-        GameObject theBuilding = Instantiate(buildPrefab);
-        XMath.assignTransform(theBuilding.transform, transform);
-        return XUtils.verify(theBuilding.GetComponent<BuildingObject>());
+    private BuildingScheme getBuildingScheme() {
+        return XUtils.verify(_buildingScheme);
     }
 
     //Fields
+    public BuildingScheme _buildingScheme = null;
+
     LimitedFloat _buildPoints;
     FastArray<CrewMember> _workers = new FastArray<CrewMember>();
 }

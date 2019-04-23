@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 public struct RangeMover<T_ElementType> : IEnumerable<T_ElementType>
+    where T_ElementType : UnityEngine.Object
 {
     //Methods
     //-API

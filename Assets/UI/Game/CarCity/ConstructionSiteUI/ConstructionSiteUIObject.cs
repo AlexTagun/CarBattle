@@ -21,21 +21,25 @@ public class ConstructionSiteUIObject : MonoBehaviour
         XUtils.check(WorkersAssignemntControl);
 
         WorkersAssignemntControl.onPressedAssignWorker += ()=>{
-            CrewMember theCrewMemberToAssign = _carCity.getFirstFreeCrewMember();
+            CrewMember theCrewMemberToAssign =
+                XUtils.verify(_carCity).getFirstFreeCrewMember();
             if (null == theCrewMemberToAssign) return;
 
-            _constructionSite.assignWorker(
+            XUtils.verify(_constructionSite).assignWorker(
                 _carCity.startFreeCrewMemberAssignment(theCrewMemberToAssign)
             );
+            theCrewMemberToAssign.setConstruction(_constructionSite);
         };
 
         WorkersAssignemntControl.onPressedWithdrawWorker += () => {
-            CrewMember theCrewMemberToWithdraw = _constructionSite.getFirstWorker();
+            CrewMember theCrewMemberToWithdraw =
+                XUtils.verify(_constructionSite).getFirstWorker();
             if (null == theCrewMemberToWithdraw) return;
 
-            _carCity.withdrawWorkerAsFree(
+            XUtils.verify(_carCity).withdrawWorkerAsFree(
                 _constructionSite.startWithdrawWorker(theCrewMemberToWithdraw)
             );
+            theCrewMemberToWithdraw.setConstruction(null);
         };
     }
 

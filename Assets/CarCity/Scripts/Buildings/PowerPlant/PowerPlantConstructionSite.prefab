@@ -46,9 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dd0cfdaa5276334384d69da9869728b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildPointsToConstruct: 100
-  buildPrefab: {fileID: 5814908434591200420, guid: b06dc3a6fe1087c42a3e481afcc211f3,
-    type: 3}
+  buildPointsToConstruct: 10
+  maxWorkersToAssign: 6
 --- !u!114 &6059894278762435770
 MonoBehaviour:
   m_ObjectHideFlags: 0

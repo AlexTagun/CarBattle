@@ -87,6 +87,7 @@ public class XUtils : MonoBehaviour
     }
 
     public static bool isValueInRange(int inValue, int inMin, int inMax) {
+        check(inMin <= inMax);
         return inValue >= inMin && inValue <= inMax;
     }
 
@@ -99,12 +100,13 @@ public class XUtils : MonoBehaviour
         private int _changesCounter;
     }
 
-    public static void check(bool inCondition, string inErrorMessage) {
+    public static void check(
+        bool inCondition, string inErrorMessage = "<No message>")
+    {
         if (inCondition) return;
         throw new System.Exception(inErrorMessage);
     }
-    public static void check(bool inCondition) { check(inCondition, "<No message>"); }
-
+ 
     public static T_Type verify<T_Type>(T_Type inReference, string inErrorMessage)
         where T_Type : Object
     {
@@ -118,5 +120,58 @@ public class XUtils : MonoBehaviour
     public static Vector2 getMouseWorldPosition() {
         if (!Camera.main) return new Vector2();
         return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    public enum AccessPolicy {
+        JustFind,
+        ShouldExist,
+        CreateIfNo,
+        ShouldBeCreated
+    }
+
+    public static T_Type getComponent<T_Type>(GameObject inGameObject,
+        AccessPolicy inComponentAccessPolicy = AccessPolicy.JustFind)
+        where T_Type : Component
+    {
+        T_Type theComponent = inGameObject.GetComponent<T_Type>();
+        if (theComponent) {
+            check(AccessPolicy.ShouldBeCreated != inComponentAccessPolicy);
+        } else {
+            switch(inComponentAccessPolicy) {
+                case AccessPolicy.CreateIfNo:
+                case AccessPolicy.ShouldBeCreated:
+                    theComponent = inGameObject.AddComponent<T_Type>();
+                    break;
+
+                case AccessPolicy.ShouldExist:
+                    check(false);
+                    break;
+            }
+        }
+
+        return theComponent;
+    }
+
+    public static T_Type getComponent<T_Type>(Component inGameObjectComponent,
+        AccessPolicy inComponentAccessPolicy = AccessPolicy.JustFind)
+        where T_Type : Component
+    {
+        return getComponent<T_Type>(inGameObjectComponent.gameObject, inComponentAccessPolicy);
+    }
+
+    public static T_Type createObject<T_Type>(T_Type inObject)
+        where T_Type : Component
+    {
+        return getComponent<T_Type>(
+            Instantiate(inObject.gameObject), AccessPolicy.ShouldExist
+        );
+    }
+
+    public static T_Type createObject<T_Type>(T_Type inObject, Transform inTransform)
+        where T_Type : Component
+    {
+        T_Type theObject = createObject<T_Type>(inObject);
+        XMath.assignTransform(theObject.transform, inTransform);
+        return theObject;
     }
 }

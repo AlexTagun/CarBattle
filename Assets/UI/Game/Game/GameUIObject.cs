@@ -39,8 +39,8 @@ public class GameUIObject : MonoBehaviour
     void Start() {
         //TODO: Remove editor pannels here
 
-        XUtils.verify(worldUI).carCity = carCity;
-        XUtils.verify(carCityUI).carCity = carCity;
+        XUtils.verify(worldUI).initFromGameUI(carCity);
+        XUtils.verify(carCityUI).initFromGameUI(carCity);
 
         worldUI.onClickedGoToCarCity += switchToCarCityUI;
         carCityUI.onClickedGoToWorld += switchToWorldUI;

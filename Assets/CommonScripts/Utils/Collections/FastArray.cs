@@ -6,7 +6,9 @@ using UnityEngine;
 //TODO: Make debug code more organized!
 
 public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
+    where T_ElementType : UnityEngine.Object
 {
+    public delegate void ElementProcessingDelegate(T_ElementType inValue);
     public delegate bool ElementPredicate(T_ElementType inValue);
 
     //Methods
@@ -17,9 +19,17 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
 
     //-Accessors
     public int getSize() { return _size; }
+    public int getLastIndex() { return getSize() - 1; }
     public bool isEmpty() { return 0 == getSize(); }
 
     public int getCapacity() { return (null != _elements) ? _elements.Length : 0; }
+
+    public void collectElements(T_ElementType[] outElements) {
+        int theLastIndex = Mathf.Min(outElements.Length - 1, getLastIndex());
+        for (int theIndex = 0; theIndex <= theLastIndex; ++theIndex) {
+            outElements[theIndex] = _elements[theIndex];
+        }
+    }
 
     //-Elements accessors
     public T_ElementType this[int inKey] {
@@ -35,8 +45,16 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
     }
 
     public Optional<int> indexOf(T_ElementType inElement) {
-        int theIndex = System.Array.IndexOf(_elements, inElement);
-        return new Optional<int>(theIndex, theIndex >= 0);
+        int theIndex = 0;
+        foreach (T_ElementType theElement in this) {
+            if (theElement == inElement) break;
+            ++theIndex;
+        }
+        return new Optional<int>(theIndex, isValidIndex(theIndex));
+    }
+
+    public bool contains(T_ElementType inElement) {
+        return indexOf(inElement).isSet();
     }
 
     public Optional<T_ElementType> getFirstElement() {
@@ -45,9 +63,14 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
     }
 
     public Optional<T_ElementType> getLastElement() {
-        int theLastIndex = getSize() - 1;
-        T_ElementType theValue = !isEmpty() ? _elements[theLastIndex] : default(T_ElementType);
+        T_ElementType theValue = !isEmpty() ?
+            _elements[getLastIndex()] : default(T_ElementType);
         return new Optional<T_ElementType>(theValue, !isEmpty());
+    }
+
+    public T_ElementType getLastElementChecked() {
+        validateIndex(getLastIndex());
+        return _elements[getLastIndex()];
     }
 
     //-Adding
@@ -82,7 +105,7 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
     }
 
     //-Removing
-    public void removeElementAt(int inIndex, bool inUseSwapRemove = true) {
+    public void removeElementAt(int inIndex, bool inUseSwapRemove = false) {
         validateIndex(inIndex);
 
         int theLastIndex = getSize() - 1;
@@ -103,7 +126,7 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
     }
 
     public ElementMover<T_ElementType> startMovingOfElementAt(
-        int inElementIndex, bool inUseSwapRemove = true)
+        int inElementIndex, bool inUseSwapRemove = false)
     {
         validateIndex(inElementIndex);
         return new ElementMover<T_ElementType>(
@@ -112,11 +135,48 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
     }
 
     public ElementMover<T_ElementType> startMovingOfElement(
-        T_ElementType inElement, bool inUseSwapRemove = true)
+        T_ElementType inElement, bool inUseSwapRemove = false)
     {
         return startMovingOfElementAt(
             indexOf(inElement).getValue(), inUseSwapRemove
         );
+    }
+
+    public void removeElementsInRange(int inBeginIndex, int inEndIndex,
+        ElementProcessingDelegate inProcessingDelegate)
+    {
+        validateIndex(inBeginIndex);
+        validateIndex(inEndIndex);
+        XUtils.check(inBeginIndex <= inEndIndex);
+
+        int theLastIndex = getLastIndex();
+        int theElementsNumToRemove = inEndIndex - inBeginIndex;
+        int theRemovingElementsOffset = theElementsNumToRemove + 1;
+
+        if (null != inProcessingDelegate) {
+            for (int theIndex = inBeginIndex; theIndex < inEndIndex; ++theIndex) {
+                inProcessingDelegate.Invoke(_elements[theIndex]);
+            }
+        }
+
+        if (inEndIndex != theLastIndex) {
+            int theLastMovingElementIndex = theLastIndex - theRemovingElementsOffset;
+            for (int theIndex = inBeginIndex; theIndex <= theLastMovingElementIndex; ++theIndex) {
+                _elements[theIndex] = _elements[theIndex + theRemovingElementsOffset];
+            }
+        }
+
+        _size -= theElementsNumToRemove;
+    }
+
+    public void removeElementsUpToEnd(int inBeginIndex) {
+        removeElementsInRange(inBeginIndex, getSize() - 1, null);
+    }
+
+    public void removeElementsUpToEnd(int inBeginIndex,
+        ElementProcessingDelegate inProcessingDelegate)
+    {
+        removeElementsInRange(inBeginIndex, getSize() - 1, inProcessingDelegate);
     }
 
     public RangeMover<T_ElementType> startMovingAll(
@@ -136,13 +196,15 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
 
     //-Iteration
     public IEnumerator<T_ElementType> GetEnumerator() {
+        //NB: We cannot use foreach by elements here,
+        // we iterate over filled elements only!
         int theSize = getSize();
         for (int theIndex = 0; theIndex < theSize; ++theIndex) {
             yield return _elements[theIndex];
         }
     }
 
-    public void iterateWithRemove(ElementPredicate inPredicate, bool inUseSwapRemove = true) {
+    public void iterateWithRemove(ElementPredicate inPredicate, bool inUseSwapRemove = false) {
         int theIndex = 0;
         while (theIndex < getSize()) {
             bool theDoRemove = inPredicate.Invoke(_elements[theIndex]);
@@ -152,6 +214,28 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
                 ++theIndex;
             }
         }
+    }
+
+    //-Find
+    public Optional<int> findIndex(ElementPredicate inPredicate) {
+        if (null == inPredicate) return new Optional<int>();
+        XUtils.check(null != inPredicate);
+
+        int theIndex = 0;
+        foreach (T_ElementType theElement in this) {
+            if (inPredicate.Invoke(theElement)) {
+                return new Optional<int>(theIndex);
+            }
+            ++theIndex;
+        }
+
+        return new Optional<int>();
+    }
+
+    public Optional<T_ElementType> findElement(ElementPredicate inPredicate) {
+        Optional<int> theIndex = findIndex(inPredicate);
+        return !theIndex.isSet() ? new Optional<T_ElementType>() :
+            new Optional<T_ElementType>(this[theIndex.getValue()]);
     }
 
     //-Implementation
@@ -167,8 +251,12 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
     IEnumerator IEnumerable.GetEnumerator() { yield return GetEnumerator(); }
 
     private void validateIndex(int inIndex) {
-        XUtils.check(XUtils.isValueInRange(inIndex, 0, _size - 1));
+        XUtils.check(isValidIndex(inIndex));
         //Debug.Log("Trying to remove element that is out of array: " + inIndex);
+    }
+
+    private bool isValidIndex(int inIndex) {
+        return isEmpty() ? false : XUtils.isValueInRange(inIndex, 0, getLastIndex());
     }
 
     private int _size = 0;

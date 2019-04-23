@@ -1,12 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class CrewMember
+public class CrewMember : ScriptableObject
 {
-    public float getBuildPointsPerUpdate(float inDeltaTime) {
-        return getBuildPointsPerSecond() * inDeltaTime;
+    public float getBuildPointsPerSecond() { return 1.0f; }
+
+    public void setConstruction(ConstructionSiteObject inConstruction) {
+        _construction = inConstruction;
     }
 
-    public float getBuildPointsPerSecond() { return 1.0f; }
+    public void update(float inDeltaTime) {
+        if (!_construction) return;
+
+        float theBuildPointsPerUpdate =
+            getBuildPointsPerSecond() * inDeltaTime;
+        _construction.constructionStep(theBuildPointsPerUpdate);
+    }
+
+    ConstructionSiteObject _construction;
 }

@@ -9,6 +9,10 @@ public class WorldObjectsAttachedUIManger : MonoBehaviour
     public void attach(
         GameObject inUI, WorldObjectAttachPoint inAttachPoint, bool inDestroyUIWithObject = true)
     {
+        XUtils.getComponent<RectTransform>(
+            inUI, XUtils.AccessPolicy.ShouldExist
+        ).SetParent(_worldAttachTransform, false);
+
         var theNewAttach = new UIAttach_ToWorldObjectAttachPoint(
             inUI.GetComponent<RectTransform>(), inAttachPoint, inDestroyUIWithObject
         );
@@ -75,6 +79,8 @@ public class WorldObjectsAttachedUIManger : MonoBehaviour
         public bool destroyUIWithObject;
     }
 
-    FastArray<UIAttach_ToWorldObjectAttachPoint> _uiAttaches_toWorldObjectAttachPoint =
-        new FastArray<UIAttach_ToWorldObjectAttachPoint>();
+    PFastArray<UIAttach_ToWorldObjectAttachPoint> _uiAttaches_toWorldObjectAttachPoint =
+        new PFastArray<UIAttach_ToWorldObjectAttachPoint>();
+
+    [SerializeField] RectTransform _worldAttachTransform = null;
 }

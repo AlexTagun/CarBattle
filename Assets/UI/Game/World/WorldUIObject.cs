@@ -3,24 +3,33 @@ using UnityEngine.UI;
 
 public class WorldUIObject : MonoBehaviour
 {
-    public CarCityObject carCity = null;
+    //Methods
+    //-Internal API [should be accesssable only from Game UI]
+    internal void initFromGameUI(CarCityObject inCarCity) {
+        _carCity = inCarCity;
+    }
 
-    public Button goToCarCityButton = null;
-    public CarCityHealthAndEnergyWorldBarObject healthAndEnergyBar = null;
-
-    void Start() {
-        XUtils.verify(goToCarCityButton).onClick.AddListener(()=> {
+    //-Implementation
+    private void Start() {
+        XUtils.verify(_goToCarCityButton).onClick.AddListener(()=> {
             onClickedGoToCarCity?.Invoke();
         });
     }
 
-    void Update() {
-        healthAndEnergyBar.set(
-            carCity.getMaxHitPoints(), carCity.getHitPoints(),
-            carCity.getMaxEnergy(), carCity.getEnergy()
+    private void Update() {
+        _healthAndEnergyBar.set(
+            _carCity.getMaxHitPoints(), _carCity.getHitPoints(),
+            _carCity.getMaxEnergy(), _carCity.getEnergy()
         );
     }
 
+    //Events
     public delegate void OnClickedGoToCarCity();
     public OnClickedGoToCarCity onClickedGoToCarCity;
+
+    //Fields
+    [SerializeField] private CarCityObject _carCity = null;
+
+    [SerializeField] private Button _goToCarCityButton = null;
+    [SerializeField] private CarCityHealthAndEnergyWorldBarObject _healthAndEnergyBar = null;
 }

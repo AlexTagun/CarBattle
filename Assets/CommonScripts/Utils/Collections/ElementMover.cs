@@ -1,4 +1,5 @@
 ﻿public struct ElementMover<T_ElementType>
+    where T_ElementType : UnityEngine.Object
 {
     public T_ElementType getMovingElement() {
         checkChanges();
