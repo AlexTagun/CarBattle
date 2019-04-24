@@ -24,13 +24,6 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
 
     public int getCapacity() { return (null != _elements) ? _elements.Length : 0; }
 
-    public void collectElements(T_ElementType[] outElements) {
-        int theLastIndex = Mathf.Min(outElements.Length - 1, getLastIndex());
-        for (int theIndex = 0; theIndex <= theLastIndex; ++theIndex) {
-            outElements[theIndex] = _elements[theIndex];
-        }
-    }
-
     //-Elements accessors
     public T_ElementType this[int inKey] {
         get {
@@ -236,6 +229,21 @@ public class FastArray<T_ElementType> : IEnumerable<T_ElementType>
         Optional<int> theIndex = findIndex(inPredicate);
         return !theIndex.isSet() ? new Optional<T_ElementType>() :
             new Optional<T_ElementType>(this[theIndex.getValue()]);
+    }
+
+    public void collectAll(ref FastArray<T_ElementType> outElements, ElementPredicate inPredicate) {
+        if (null == inPredicate) return;
+        foreach (T_ElementType theElement in this) {
+            if (!inPredicate(theElement)) continue;
+            outElements.add(theElement);
+        }
+    }
+
+    public void collectAll(T_ElementType[] outElements) {
+        int theLastIndex = Mathf.Min(outElements.Length - 1, getLastIndex());
+        for (int theIndex = 0; theIndex <= theLastIndex; ++theIndex) {
+            outElements[theIndex] = _elements[theIndex];
+        }
     }
 
     //-Implementation

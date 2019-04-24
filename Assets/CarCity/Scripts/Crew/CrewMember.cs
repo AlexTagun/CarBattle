@@ -8,13 +8,22 @@ public class CrewMember : ScriptableObject
         _construction = inConstruction;
     }
 
+    public ConstructionSiteObject getConstruction() {
+        return _construction;
+    }
+
+
+    public bool isFree() {
+        return !XUtils.isValid(_construction);
+    }
+
     public void update(float inDeltaTime) {
-        if (!_construction) return;
+        if (isFree()) return;
 
         float theBuildPointsPerUpdate =
             getBuildPointsPerSecond() * inDeltaTime;
         _construction.constructionStep(theBuildPointsPerUpdate);
     }
 
-    ConstructionSiteObject _construction;
+    ConstructionSiteObject _construction = null;
 }

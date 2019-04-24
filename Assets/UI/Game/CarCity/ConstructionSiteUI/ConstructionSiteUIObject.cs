@@ -25,21 +25,18 @@ public class ConstructionSiteUIObject : MonoBehaviour
                 XUtils.verify(_carCity).getFirstFreeCrewMember();
             if (null == theCrewMemberToAssign) return;
 
-            XUtils.verify(_constructionSite).assignWorker(
-                _carCity.startFreeCrewMemberAssignment(theCrewMemberToAssign)
-            );
+            collectConstructionSiteWorkers(ref __arrayRegister);
+            if (__arrayRegister.getSize() >=
+                _constructionSite.getMaxWorkersPossibleToAssign()) return;
+
             theCrewMemberToAssign.setConstruction(_constructionSite);
         };
 
         WorkersAssignemntControl.onPressedWithdrawWorker += () => {
-            CrewMember theCrewMemberToWithdraw =
-                XUtils.verify(_constructionSite).getFirstWorker();
-            if (null == theCrewMemberToWithdraw) return;
+            collectConstructionSiteWorkers(ref __arrayRegister);
+            if (0 == __arrayRegister.getSize()) return;
 
-            XUtils.verify(_carCity).withdrawWorkerAsFree(
-                _constructionSite.startWithdrawWorker(theCrewMemberToWithdraw)
-            );
-            theCrewMemberToWithdraw.setConstruction(null);
+            __arrayRegister[0].setConstruction(null);
         };
     }
 
@@ -49,13 +46,23 @@ public class ConstructionSiteUIObject : MonoBehaviour
             _constructionSite.getCurrentBuildPoints()
         );
 
+        collectConstructionSiteWorkers(ref __arrayRegister);
         WorkersAssignemntControl.set(
             _constructionSite.getMaxWorkersPossibleToAssign(),
-            _constructionSite.getCurrenAssignedWorkersCount()
+            __arrayRegister.getSize()
         );
+    }
+
+    private void collectConstructionSiteWorkers(ref FastArray<CrewMember> outWorkers) {
+        outWorkers.clear();
+        _carCity.collectCrewMembers(ref outWorkers, (CrewMember inCrewMember) => {
+            return _constructionSite == inCrewMember.getConstruction();
+        });
     }
 
     //Fields
     private CarCityObject _carCity = null;
     private ConstructionSiteObject _constructionSite = null;
+
+    private FastArray<CrewMember> __arrayRegister = new FastArray<CrewMember>();
 }

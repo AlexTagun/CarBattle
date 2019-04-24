@@ -16,21 +16,25 @@ public class CarCityObject : MonoBehaviour
         return _crewMembers.getSize();
     }
     public int getFreeCrewMemberCount() {
-        return _freeCrewMembers.getSize();
-    }
-
-    public void withdrawWorkerAsFree(ElementMover<CrewMember> inMover) {
-        _freeCrewMembers.placeMovingElement(inMover);
-    }
-
-    public ElementMover<CrewMember> startFreeCrewMemberAssignment(
-        CrewMember inCrewMember)
-    {
-        return _freeCrewMembers.startMovingOfElement(inCrewMember);
+        int theResult = 0;
+        foreach (CrewMember theCrewMember in _crewMembers) {
+            theResult += theCrewMember.isFree() ? 1 : 0;
+        }
+        return theResult;
     }
 
     public CrewMember getFirstFreeCrewMember() {
-        return _freeCrewMembers.getFirstElement().getValue(false);
+        foreach (CrewMember theCrewMember in _crewMembers) {
+            if (theCrewMember.isFree()) return theCrewMember;
+        }
+        return null;
+    }
+
+    public void collectCrewMembers(
+        ref FastArray<CrewMember> outCrewMemebers,
+        FastArray<CrewMember>.ElementPredicate inPredicate)
+    {
+        _crewMembers.collectAll(ref outCrewMemebers, inPredicate);
     }
 
     //-Buildings
@@ -38,7 +42,7 @@ public class CarCityObject : MonoBehaviour
     public BuildingScheme[] getBuildingSchemes() {
         BuildingScheme[] theBuildingSchemes =
             new BuildingScheme[_buildingSchemes.getSize()];
-        _buildingSchemes.collectElements(theBuildingSchemes);
+        _buildingSchemes.collectAll(theBuildingSchemes);
         return theBuildingSchemes;
     }
 
@@ -60,7 +64,6 @@ public class CarCityObject : MonoBehaviour
                 ScriptableObject.CreateInstance<CrewMember>()
             );
         }
-        _freeCrewMembers.addAll(_crewMembers);
 
         //TEST {
         foreach (BuildingScheme theTestBuildingScheme in testBuildingSchemes) {
@@ -84,7 +87,6 @@ public class CarCityObject : MonoBehaviour
 
     //-Crew
     FastArray<CrewMember> _crewMembers = new FastArray<CrewMember>();
-    FastArray<CrewMember> _freeCrewMembers = new FastArray<CrewMember>();
 
     //-Buildings
     private FastArray<BuildingScheme> _buildingSchemes = new FastArray<BuildingScheme>();

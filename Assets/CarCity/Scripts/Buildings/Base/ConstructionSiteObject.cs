@@ -21,28 +21,8 @@ public class ConstructionSiteObject : MonoBehaviour
     }
 
     //--Workers control
-    public int getCurrenAssignedWorkersCount() {
-        return _workers.getSize();
-    }
     public int getMaxWorkersPossibleToAssign() {
         return maxWorkersToAssign;
-    }
-
-    public void assignWorker(ElementMover<CrewMember> inWorkerMover) {
-        if (_workers.getSize() == maxWorkersToAssign) return;
-        _workers.placeMovingElement(inWorkerMover);
-    }
-    public ElementMover<CrewMember> startWithdrawWorker(CrewMember inWorker) {
-        return _workers.startMovingOfElement(inWorker);
-    }
-
-    public CrewMember getFirstWorker() {
-        Optional<CrewMember> theCrewMember = _workers.getFirstElement();
-        return theCrewMember.isSet() ? theCrewMember.getValue() : null;
-    }
-
-    public RangeMover<CrewMember> startWithdrawAllWorkers() {
-        return _workers.startMovingAll();
     }
 
     //-Implementation
@@ -72,5 +52,4 @@ public class ConstructionSiteObject : MonoBehaviour
     public BuildingScheme _buildingScheme = null;
 
     LimitedFloat _buildPoints;
-    FastArray<CrewMember> _workers = new FastArray<CrewMember>();
 }

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0545eb5e9ecbbf341a773dc3249e18ce, type: 3}
+  m_Name: PowerCollectorBuildingScheme
+  m_EditorClassIdentifier: 
+  buildingPlan: {fileID: 8810031053073992058, guid: 4fa004e5a727de9459f7423d523e64fa,
+    type: 3}
+  constructionSite: {fileID: 7796140283532439298, guid: 9a79a8be31138354c9dbc86dbd778ca7,
+    type: 3}
+  building: {fileID: 2815977641208864394, guid: 6b09dd934e5ea3149b41fb762f594069,
+    type: 3}
+  buildingName: Power Collector

@@ -10,7 +10,12 @@ public class BuildingScheme : ScriptableObject
     public string buildingName = "<none>";
 
     public void OnEnable() {
-        buildingPlan._buildingScheme = this;
-        constructionSite._buildingScheme = this;
+        if (buildingPlan) {
+            buildingPlan._buildingScheme = this;
+        }
+
+        if (constructionSite) {
+            constructionSite._buildingScheme = this;
+        }
     }
 }
