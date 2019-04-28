@@ -7,6 +7,31 @@ public class XUtils : MonoBehaviour
         return -1 != System.Array.IndexOf(inArray, inValue);
     }
 
+    public enum Comparation {
+        ALessThenB,
+        AEqualsB,
+        AMoreThenB
+    }
+
+    public static void sort<T_Type>(
+        T_Type[] inoutArray, int inStartIndex, int inLength,
+        System.Func<T_Type, T_Type, Comparation> inLambda)
+    {
+        XUtils.check(null != inLambda);
+        System.Array.Sort(inoutArray, inStartIndex, inLength,
+            LambdaComparer<T_Type>.getForLambda(inLambda)
+        );
+    }
+
+    public static Comparation compare<T_Type>(T_Type inA, T_Type inB)
+        where T_Type : System.IComparable<T_Type>
+    {
+        int theComparationResult = inA.CompareTo(inB);
+        return 0 == theComparationResult ? Comparation.AEqualsB :
+            (theComparationResult > 0 ?
+                Comparation.AMoreThenB : Comparation.ALessThenB);
+    }
+
     public struct ArraysTransformPair<T_TypeFrom, T_TypeTo>
     {
         public ArraysTransformPair(T_TypeFrom[] inFrom, System.Action<T_TypeTo[]> inToAssigning) {
@@ -173,5 +198,63 @@ public class XUtils : MonoBehaviour
         T_Type theObject = createObject<T_Type>(inObject);
         XMath.assignTransform(theObject.transform, inTransform);
         return theObject;
+    }
+
+    public static bool isObjectHasComponent<T_Type>(GameObject inObject, T_Type inComponent)
+        where T_Type : Component
+    {
+        check(inObject);
+        check(inComponent);
+
+        return (-1 != System.Array.IndexOf(inObject.GetComponents<T_Type>(), inComponent));
+    }
+
+    public static bool isComponentRelatedToObject<T_Type>(GameObject inObject, T_Type inComponent)
+        where T_Type : Component
+    {
+        check(inObject);
+        check(inComponent);
+
+        if (isObjectHasComponent(inObject, inComponent)) return true;
+        return isObjectRelatedToObject(inObject, inComponent.gameObject);
+    }
+
+    private static bool isObjectRelatedToObject(GameObject inObject, GameObject inTestingObject) {
+        check(inObject);
+        check(inTestingObject);
+
+        if (inObject == inTestingObject) return true;
+
+        Transform theParentTransform = inTestingObject.transform.parent;
+        if (!theParentTransform) return false;
+        return isObjectRelatedToObject(inObject, theParentTransform.gameObject);
+    }
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    class LambdaComparer<T_Type> : IComparer<T_Type>
+    {
+        public int Compare(T_Type inA, T_Type inB) {
+            XUtils.check(null != lambda);
+            switch(lambda(inA, inB)) {
+                case Comparation.ALessThenB: return -1;
+                case Comparation.AEqualsB:   return 0;
+                case Comparation.AMoreThenB: return 1;
+            }
+
+            XUtils.check(false);
+            return 0;
+        }
+
+        public static LambdaComparer<T_Type> getForLambda(
+            System.Func<T_Type, T_Type, Comparation> inLambda)
+        {
+            __lambdaComparer.lambda = inLambda;
+            return __lambdaComparer;
+        }
+
+        public System.Func<T_Type, T_Type, Comparation> lambda;
+        private static LambdaComparer<T_Type> __lambdaComparer =
+            new LambdaComparer<T_Type>();
     }
 }

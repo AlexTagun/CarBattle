@@ -1,15 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class WheelTrailPainter : MonoBehaviour{
+public class WheelTrailPainter : MonoBehaviour
+{
+    [SerializeField] private GameObject _wheelTrailAsset = null;
+    [SerializeField] private Material[] _materials = null;
 
-    [SerializeField]
-    private GameObject _wheelTrailAsset;
-    [SerializeField]
-    private Material[] _materials;
-
-    private BoxCollider2D _collider;
+    private BoxCollider2D _collider = null;
     private LineRenderer _lineRenderer = null;
 
     void Start(){
@@ -19,9 +15,6 @@ public class WheelTrailPainter : MonoBehaviour{
     void Update(){
         UpdateTrail();
         checkLand();
-
-
-
     }
 
     private void UpdateTrail() {
@@ -63,7 +56,6 @@ public class WheelTrailPainter : MonoBehaviour{
     }
 
     private void OnTriggerEnter2D(string land) {
-        Debug.Log("dada");
         switch (land) {
             case "sharpLand":
                 _lineRenderer = startPaintTrail(_materials[0]);
@@ -77,6 +69,4 @@ public class WheelTrailPainter : MonoBehaviour{
     private void OnTriggerExit2D() {
         stopPaintTrail();
     }
-
-
 }

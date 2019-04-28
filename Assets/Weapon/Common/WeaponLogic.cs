@@ -30,7 +30,11 @@ public class WeaponLogic : MonoBehaviour
 
     //Methods
     public void doShoot() {
-        uiShootController.setAmmoQuantity((int)_ammoInClip.getValue());
+        if (uiShootController) {
+            uiShootController.setAmmoQuantity(
+                (int)_ammoInClip.getValue()
+            );
+        }
         internalDoShoot();
     }
 
@@ -42,8 +46,13 @@ public class WeaponLogic : MonoBehaviour
         _ammoInClip = new LimitedFloat(ClipSettings);
 
         _stateMachine = new SimpleStateMachine<State>(State.Idle);
+        
         uiShootController = GetComponent<UIShootController>();
-        uiShootController.setClipStats((int)_ammoInClip.getValue(), (int)_ammoInClip.getValue());
+        if (uiShootController) {
+            uiShootController.setClipStats(
+                (int)_ammoInClip.getValue(), (int)_ammoInClip.getValue()
+            );
+        }
     }
 
     protected void Update() {

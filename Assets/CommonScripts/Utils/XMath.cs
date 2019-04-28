@@ -8,6 +8,32 @@ public class XMath
         return new Vector3(Mathf.Cos(theAngleRadians), Mathf.Sin(theAngleRadians), 0.0f);
     }
 
+    public static void getFromTransform(
+        ref Vector2 outWorldPosition, ref float outWorldRotation,
+        Transform inTransform)
+    {
+        outWorldPosition = inTransform.position;
+
+        Quaternion theLocalRotation = Quaternion.Euler(
+            0.0f, 0.0f, inTransform.rotation.eulerAngles.z
+        );
+
+        Transform theParentTransform = inTransform.gameObject.transform.parent;
+        Quaternion theWorldRotation = theParentTransform ?
+            theLocalRotation : theParentTransform.rotation * theLocalRotation;
+
+        outWorldRotation = theWorldRotation.eulerAngles.z;
+    }
+
+    public static void getFromTransform(
+        ref Vector2 outWorldPosition, ref float outWorldRotatioin,
+        GameObject inObjectWithTransform)
+    {
+        getFromTransform(ref outWorldPosition, ref outWorldRotatioin,
+            inObjectWithTransform.transform
+        );
+    }
+
     public static Vector3 getVectorRotatedBy90Degrees(Vector3 inVector) {
         return new Vector3(-inVector.y, inVector.x, 0.0f);
     }

@@ -4,17 +4,11 @@ using UnityEngine;
 
 public class WeaponGunLogic : WeaponLogic
 {
-    //Fields
-    //-Settings
+    //Settings
     public GameObject owner = null;
 
-    private RotateToTargetAngleLogic _rotateLogic = null;
-
-    private TransformHolderLogic.Point[] _shootingPoints = null;
-
-    private WeaponGunEffectInterface[] _effectInterfaces = null;
-
     //Methods
+    //-API
     public void setTargetAngle(float inTargetAngle) {
         _rotateLogic.setTargetAngle(inTargetAngle);
     }
@@ -24,33 +18,27 @@ public class WeaponGunLogic : WeaponLogic
     protected new void Start() {
         base.Start();
 
-        TransformHolderLogic[] theShootingPointHolders = gameObject.GetComponentsInChildren<TransformHolderLogic>();
-        _shootingPoints = new TransformHolderLogic.Point[theShootingPointHolders.Length];
-        for (int theIndex = 0; theIndex < theShootingPointHolders.Length; ++theIndex) {
-            _shootingPoints[theIndex] = theShootingPointHolders[theIndex].getTransform();
-        }
-
-        _rotateLogic = gameObject.GetComponent<RotateToTargetAngleLogic>();
-
         _effectInterfaces = gameObject.GetComponents<WeaponGunEffectInterface>();
+
+        foreach (GameObject theShootingPoint in _shootingPoints) {
+            theShootingPoint.SetActive(false);
+        }
     }
 
     protected override void performShoot() {
-        foreach (TransformHolderLogic.Point theShootingPoint in _shootingPoints) {
+        foreach (GameObject theShootingPoint in _shootingPoints) {
             performShootFromPoint(theShootingPoint);
         }
     }
 
-
     //--Shoot implementation
-    private void performShootFromPoint(TransformHolderLogic.Point inShootingPoint) {
-        Vector2 thePointWorld = transform.TransformPoint(inShootingPoint.position);
-
-        Quaternion theLocalRotation = Quaternion.Euler(0.0f, 0.0f, inShootingPoint.rotation);
-        Quaternion theWorldRotation = transform.rotation * theLocalRotation;
-
-        float theWorldAngle = theWorldRotation.eulerAngles.z * Mathf.Deg2Rad;
-        Vector2 theDiraction = new Vector2(Mathf.Cos(theWorldAngle), Mathf.Sin(theWorldAngle));
+    private void performShootFromPoint(GameObject inShootingPoint) {
+        Vector2 thePointWorld = new Vector2();
+        float theRotation = 0.0f;
+        XMath.getFromTransform(
+            ref thePointWorld, ref theRotation, inShootingPoint
+        );
+        Vector2 theDiraction = XMath.getDiractionVectorForAngle(theRotation);
 
         float theShootingDistance = 10.0f;
         RaycastHit2D[] theHits = Physics2D.RaycastAll(
@@ -87,7 +75,9 @@ public class WeaponGunLogic : WeaponLogic
     }
 
     //--Effects
-    void notifyEffectsAboutShoot(Vector2 inStart, Vector2 inDiraction, float inDistance, Vector2 inHitPoint, bool inHitted) {
+    void notifyEffectsAboutShoot(Vector2 inStart, Vector2 inDiraction, float inDistance,
+        Vector2 inHitPoint, bool inHitted)
+    {
         Vector2 theEndPoint = inHitted ? inHitPoint : inStart + inDiraction * inDistance;
         foreach (WeaponGunEffectInterface theInterface in _effectInterfaces) {
             theInterface.onShoot(inStart, theEndPoint, inHitted);
@@ -101,4 +91,10 @@ public class WeaponGunLogic : WeaponLogic
         Collider2D[] theOwnerColliders = owner.GetComponentsInChildren<Collider2D>();
         return (-1 != System.Array.IndexOf(theOwnerColliders, inCollider));
     }
+
+    //-Fields
+    [SerializeField] private RotateToTargetAngleLogic _rotateLogic = null;
+    [SerializeField] private GameObject[] _shootingPoints = null;
+
+    private WeaponGunEffectInterface[] _effectInterfaces = null;
 }

@@ -6,7 +6,7 @@ public class InputCarController : MonoBehaviour
 {
     //Fields
     private CarPhysicsLogic _carPhysics = null;
-    private WeaponGunLogic[] _weaponGunsLogic = null;
+    private WeaponLogic[] _weaponsLogic = null;
 
     //-Input state
     //--Mouse
@@ -24,7 +24,7 @@ public class InputCarController : MonoBehaviour
     //-Implementation
     private void Start() {
         _carPhysics = gameObject.GetComponentInChildren<CarPhysicsLogic>();
-        _weaponGunsLogic = gameObject.GetComponentsInChildren<WeaponGunLogic>();
+        _weaponsLogic = gameObject.GetComponentsInChildren<WeaponLogic>();
     }
 
     private void FixedUpdate() {
@@ -62,13 +62,17 @@ public class InputCarController : MonoBehaviour
 
         //Car shooting update
         if (_isMouseButtonPressed) {
-            foreach(WeaponGunLogic theGunLogic in _weaponGunsLogic) {
+            foreach(WeaponLogic theGunLogic in _weaponsLogic) {
                 theGunLogic.doShoot();
             }
         }
 
-        foreach (WeaponGunLogic theGunLogic in _weaponGunsLogic) {
-            theGunLogic.setTargetAngle(
+        foreach (WeaponLogic theGunLogic in _weaponsLogic) {
+            var theTargetComponent =
+                XUtils.getComponent<RotateToTargetAngleLogic>(theGunLogic);
+            if (!theTargetComponent) continue;
+
+            theTargetComponent.setTargetAngle(
                 Mathf.Atan2(_carRelatedMousePosition.y, _carRelatedMousePosition.x) * Mathf.Rad2Deg
             );
         }
