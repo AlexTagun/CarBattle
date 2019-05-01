@@ -3,14 +3,39 @@ using System.Collections.Generic;
 
 public class XUtils : MonoBehaviour
 {
-    public static bool arrayContains<T_Type>(T_Type[] inArray, T_Type inValue) {
-        return -1 != System.Array.IndexOf(inArray, inValue);
+    // --- ALGORITHMS --- 
+    // - - Basics - -
+
+    public static void swap<T_Type>(ref T_Type inValueRefA, ref T_Type inValueRefB) {
+        T_Type theSwapValue = inValueRefA;
+        inValueRefA = inValueRefB;
+        inValueRefB = theSwapValue;
+    }
+
+    public static bool isValueInRange(int inValue, int inMin, int inMax) {
+        check(inMin <= inMax);
+        return inValue >= inMin && inValue <= inMax;
     }
 
     public enum Comparation {
         ALessThenB,
         AEqualsB,
         AMoreThenB
+    }
+
+    public static Comparation compare<T_Type>(T_Type inA, T_Type inB)
+        where T_Type : System.IComparable<T_Type>
+    {
+        int theComparationResult = inA.CompareTo(inB);
+        return 0 == theComparationResult ? Comparation.AEqualsB :
+            (theComparationResult > 0 ?
+                Comparation.AMoreThenB : Comparation.ALessThenB);
+    }
+
+    // - - Array - -
+
+    public static bool arrayContains<T_Type>(T_Type[] inArray, T_Type inValue) {
+        return -1 != System.Array.IndexOf(inArray, inValue);
     }
 
     public static void sort<T_Type>(
@@ -23,85 +48,7 @@ public class XUtils : MonoBehaviour
         );
     }
 
-    public static Comparation compare<T_Type>(T_Type inA, T_Type inB)
-        where T_Type : System.IComparable<T_Type>
-    {
-        int theComparationResult = inA.CompareTo(inB);
-        return 0 == theComparationResult ? Comparation.AEqualsB :
-            (theComparationResult > 0 ?
-                Comparation.AMoreThenB : Comparation.ALessThenB);
-    }
-
-    public struct ArraysTransformPair<T_TypeFrom, T_TypeTo>
-    {
-        public ArraysTransformPair(T_TypeFrom[] inFrom, System.Action<T_TypeTo[]> inToAssigning) {
-            from = inFrom;
-            toAssigning = inToAssigning;
-        }
-
-        public T_TypeFrom[] from;
-        public System.Action<T_TypeTo[]> toAssigning;
-    }
-
-    public struct PushableArrayBuilder<T_Type>
-    {
-        public PushableArrayBuilder(int inSize) {
-            array = new T_Type[inSize];
-            pushingIndex = 0;
-        }
-
-        public void push(T_Type inNewValue) {
-            array[pushingIndex++] = inNewValue;
-        }
-
-        public T_Type[] getArray() { return array; }
-
-        T_Type[] array;
-        int pushingIndex;
-    };
-
-    public static void transformArray<T_TypeFrom, T_TypeTo>(
-        ArraysTransformPair<T_TypeFrom, T_TypeTo> inMainTransform,
-        System.Func<T_TypeFrom, T_TypeTo> inMappingLogic,
-        ArraysTransformPair<T_TypeFrom, T_TypeTo>[] inRelatedTransforms = null
-    ) where T_TypeFrom : class   where T_TypeTo : class
-    {
-        //Initialize result builders
-        var theMainResultBuilder = new PushableArrayBuilder<T_TypeTo>(
-            inMainTransform.from.Length
-        );
-
-        var theRelatedResultBuilders = new PushableArrayBuilder<T_TypeTo>[
-            inRelatedTransforms.Length
-        ];
-        for (int theIndex = 0; theIndex < inRelatedTransforms.Length; ++theIndex) {
-            theRelatedResultBuilders[theIndex] = new PushableArrayBuilder<T_TypeTo>(
-                inRelatedTransforms[theIndex].from.Length
-            );
-        }
-
-        foreach (T_TypeFrom theValueFrom in inMainTransform.from) {
-            T_TypeTo theValueTo = inMappingLogic(theValueFrom);
-            theMainResultBuilder.push(theValueTo);
-
-            for (int theIndex = 0; theIndex < inRelatedTransforms.Length; ++theIndex) {
-                if (arrayContains(inRelatedTransforms[theIndex].from, theValueFrom)) {
-                    theRelatedResultBuilders[theIndex].push(theValueTo);
-                }
-            }
-        }
-
-        inMainTransform.toAssigning(theMainResultBuilder.getArray());
-        for (int theIndex = 0; theIndex < inRelatedTransforms.Length; ++theIndex) {
-            inRelatedTransforms[theIndex].toAssigning(theRelatedResultBuilders[theIndex].getArray());
-        }
-    }
-
-    public static void swap<T_Type>(ref T_Type inValueRefA, ref T_Type inValueRefB) {
-        T_Type theSwapValue = inValueRefA;
-        inValueRefA = inValueRefB;
-        inValueRefB = theSwapValue;
-    }
+    // --- VALIDATION --- 
 
     public static bool isValid(GameObject inObject) {
         return !!inObject;
@@ -111,9 +58,19 @@ public class XUtils : MonoBehaviour
         return !!inComponent && isValid(inComponent.gameObject);
     }
 
-    public static bool isValueInRange(int inValue, int inMin, int inMax) {
-        check(inMin <= inMax);
-        return inValue >= inMin && inValue <= inMax;
+    public static void check(
+        bool inCondition, string inErrorMessage = "<No message>")
+    {
+        if (inCondition) return;
+        throw new System.Exception(inErrorMessage);
+    }
+
+    public static T_Type verify<T_Type>(
+        T_Type inReference, string inErrorMessage = "<No message>")
+        where T_Type : Object
+    {
+        if (null != inReference) return inReference;
+        throw new System.Exception(inErrorMessage);
     }
 
     public struct ChangesTracker {
@@ -125,27 +82,7 @@ public class XUtils : MonoBehaviour
         private int _changesCounter;
     }
 
-    public static void check(
-        bool inCondition, string inErrorMessage = "<No message>")
-    {
-        if (inCondition) return;
-        throw new System.Exception(inErrorMessage);
-    }
- 
-    public static T_Type verify<T_Type>(T_Type inReference, string inErrorMessage)
-        where T_Type : Object
-    {
-        if (null != inReference) return inReference;
-        throw new System.Exception(inErrorMessage);
-    }
-    public static T_Type verify<T_Type>(T_Type inReference) where T_Type : Object {
-        return verify<T_Type>(inReference, "<No message>");
-    }
-
-    public static Vector2 getMouseWorldPosition() {
-        if (!Camera.main) return new Vector2();
-        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    }
+    // --- COMPONENTS ACCESS --- 
 
     public enum AccessPolicy {
         JustFind,
@@ -184,6 +121,8 @@ public class XUtils : MonoBehaviour
         return getComponent<T_Type>(inGameObjectComponent.gameObject, inComponentAccessPolicy);
     }
 
+    // --- OBJECTS SPAWNING
+
     public static T_Type createObject<T_Type>(T_Type inObject)
         where T_Type : Component
     {
@@ -199,6 +138,8 @@ public class XUtils : MonoBehaviour
         XMath.assignTransform(theObject.transform, inTransform);
         return theObject;
     }
+
+    // --- OBJECT RELATIONS ---
 
     public static bool isObjectHasComponent<T_Type>(GameObject inObject, T_Type inComponent)
         where T_Type : Component
@@ -230,9 +171,16 @@ public class XUtils : MonoBehaviour
         return isObjectRelatedToObject(inObject, theParentTransform.gameObject);
     }
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - -
+    // --- MISC ---
 
-    class LambdaComparer<T_Type> : IComparer<T_Type>
+    public static Vector2 getMouseWorldPosition() {
+        if (!Camera.main) return new Vector2();
+        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    // --- UTILITY TYPES ---
+
+    private class LambdaComparer<T_Type> : IComparer<T_Type>
     {
         public int Compare(T_Type inA, T_Type inB) {
             XUtils.check(null != lambda);
