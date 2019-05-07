@@ -9,7 +9,18 @@ public class CarCityObject : MonoBehaviour
     public float getMaxHitPoints() { return _hitPoints.getMaximum(); }
 
     public float getEnergy() { return _energy.getValue(); }
+    public void changeEnergy(float inDeltaValue) {
+        _energy.changeValue(inDeltaValue);
+    }
+
     public float getMaxEnergy() { return _energy.getMaximum(); }
+    public void changeMaxEnergy(float inDeltaValue) {
+        _energy.setMaximum(_energy.getMaximum() + inDeltaValue);
+    }
+
+    public GameObject getOuterLevel() { return _outerLevel; }
+    public GameObject getInnerLevel() { return _innerLevel; }
+    public GameObject getEngineLevel() { return _engineLevel; }
 
     //-Crew management
     public int getTotalCrewMembersCount() {
@@ -79,6 +90,11 @@ public class CarCityObject : MonoBehaviour
     }
 
     //Fields
+    //-Settings
+    [SerializeField] GameObject _outerLevel = null;
+    [SerializeField] GameObject _innerLevel = null;
+    [SerializeField] GameObject _engineLevel = null;
+
     //-Resources
     LimitedFloat _hitPoints = new LimitedFloat(0.0f, 100.0f, 100.0f);
 

@@ -18,4 +18,6 @@ MonoBehaviour:
     type: 3}
   building: {fileID: 2815977641208864394, guid: 6b09dd934e5ea3149b41fb762f594069,
     type: 3}
+  buildPointsToConstruct: 10
+  maxWorkersToAssign: 2
   buildingName: Power Collector

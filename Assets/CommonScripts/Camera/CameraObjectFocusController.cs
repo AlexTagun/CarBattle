@@ -9,7 +9,7 @@ public class CameraObjectFocusController : MonoBehaviour
 
     void Start() { }
 
-    void Update() {
+    void FixedUpdate() {
         Vector3 theObjectPosition = Object.transform.position;
         theObjectPosition.z = transform.position.z;
         transform.position = theObjectPosition;

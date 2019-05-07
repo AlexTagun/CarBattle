@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UIShootController : MonoBehaviour
 {
-    UIManager uiManager;
+    //UIManager uiManager;
 
     private void Start() {
         //uiManager = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();

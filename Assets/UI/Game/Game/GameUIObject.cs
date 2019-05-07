@@ -4,46 +4,54 @@ using UnityEngine;
 
 public class GameUIObject : MonoBehaviour
 {
-    //Settings
-    public CarCityObject carCity = null;
-
-    public WorldUIObject worldUI = null;
-    public CarCityUIObject carCityUI = null;
-
-    //TODO: Organize cameras in some Camera Manager
-    // Find integral solution for all player-related functionality (input+cameras)
-    //{
-    public Camera worldCamera = null;
-    public Camera carCityCamera = null;
-    //}
-
     //Methods
     //-API
-    public void switchToWorldUI() {
+    public void switchToWorldUI(
+        float inCameraTransitionTime = 0.0f)
+    {
         hideUI(carCityUI.gameObject);
         showUI(worldUI.gameObject);
 
-        worldCamera.enabled = true;
-        carCityCamera.enabled = false;
+        _cameraManager.setCamera(
+            worldCamera.getSettings(), inCameraTransitionTime
+        );
+
+        _pauseManager.setPauseEnabled(false);
     }
 
-    public void switchToCarCityUI() {
+    public void switchToCarCityUI(
+        float inCameraTransitionTime = 0.0f)
+    {
         hideUI(worldUI.gameObject);
         showUI(carCityUI.gameObject);
 
-        worldCamera.enabled = false;
-        carCityCamera.enabled = true;
+        _cameraManager.setCamera(
+            carCityCamera.getSettings(), inCameraTransitionTime
+        );
+
+        _pauseManager.setPauseEnabled(true);
     }
 
     //-Implementation
-    void Start() {
+    void Awake() {
         //TODO: Remove editor pannels here
 
         XUtils.verify(worldUI).initFromGameUI(carCity);
         XUtils.verify(carCityUI).initFromGameUI(carCity);
 
-        worldUI.onClickedGoToCarCity += switchToCarCityUI;
-        carCityUI.onClickedGoToWorld += switchToWorldUI;
+        worldUI.onClickedGoToCarCity += ()=> { switchToCarCityUI(300.0f); };
+        carCityUI.onClickedGoToWorld += ()=> { switchToWorldUI(300.0f); };
+
+        _cameraManager = XUtils.verify(
+            FindObjectOfType<CameraManager>()
+        );
+
+        _pauseManager = XUtils.verify(
+            FindObjectOfType<PauseManager>()
+        );
+
+        XUtils.check(worldCamera);
+        XUtils.check(carCityCamera);
 
         switchToWorldUI();
     }
@@ -59,4 +67,20 @@ public class GameUIObject : MonoBehaviour
     void hideUI(GameObject inUI) {
         inUI.SetActive(false);
     }
+
+    //Fields
+    //-Settings
+    public CarCityObject carCity = null;
+
+    public WorldUIObject worldUI = null;
+    public CarCityUIObject carCityUI = null;
+
+    private CameraManager _cameraManager = null;
+    private PauseManager _pauseManager = null;
+
+    //TODO: Make this system more organized
+    //{
+    public CameraSettingsHolder worldCamera = null;
+    public CameraSettingsHolder carCityCamera = null;
+    //}
 }

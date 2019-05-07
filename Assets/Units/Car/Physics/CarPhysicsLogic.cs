@@ -209,9 +209,12 @@ public class CarPhysicsLogic : ISimulatableLogic
     //--Utils
     //---Gas
     private void applyGasForWheel(WheelState inWheelState, float inGasValue) {
+        Vector2 theGetForceInUnits = XMetrics.forceToUnits(
+            getWheelGasForce(inWheelState, inGasValue)
+        );
+
         _rigidBody.AddForceAtPosition(
-            getWheelGasForce(inWheelState, inGasValue),
-            getWheelWorldPosition(inWheelState),
+            theGetForceInUnits, getWheelWorldPosition(inWheelState),
             ForceMode2D.Force
         );
     }
@@ -231,9 +234,6 @@ public class CarPhysicsLogic : ISimulatableLogic
     }
 
     private Vector2 getWheelResistanceForce(WheelState inWheelState) {
-        float theDirectResistanceK = 0.3f;
-        float theSideResistanceK = 0.9f;
-
         Vector2 theWheelPosition = getWheelWorldPosition(inWheelState);
         float theWheelsRotation = getWheelWorldRotation(inWheelState);
 
@@ -242,12 +242,12 @@ public class CarPhysicsLogic : ISimulatableLogic
         Vector3 theWheelsDiraction = XMath.getDiractionVectorForAngle(theWheelsRotation);
         Vector2 theDirectProjectedAccumulateVelocity =
             Vector3.Project(theVelocityInWheelPosition, theWheelsDiraction);
-        Vector2 theDirectResistanceForce = -theDirectProjectedAccumulateVelocity * theDirectResistanceK;
+        Vector2 theDirectResistanceForce = -theDirectProjectedAccumulateVelocity * _directResistanceK;
 
         Vector3 theWheelsNormalDiraction = XMath.getVectorRotatedBy90Degrees(theWheelsDiraction);
         Vector2 theSideProjectedAccumulateVelocity =
             Vector3.Project(theVelocityInWheelPosition, theWheelsNormalDiraction);
-        Vector2 theSideResistanceForce = -theSideProjectedAccumulateVelocity * theSideResistanceK;
+        Vector2 theSideResistanceForce = -theSideProjectedAccumulateVelocity * _sideResistanceK;
 
         return theDirectResistanceForce + theSideResistanceForce;
     }
@@ -277,4 +277,8 @@ public class CarPhysicsLogic : ISimulatableLogic
         Vector2 _position;
         float _rotation;
     }
+
+    //TODO: Make this value more controlled
+    [SerializeField] float _directResistanceK = 0.3f;
+    [SerializeField] float _sideResistanceK = 0.9f;
 }

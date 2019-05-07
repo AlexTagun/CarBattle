@@ -2,7 +2,19 @@
 
 public class BuildingObject : MonoBehaviour
 {
-    private void Start() {
-        //Debug.Log("Builded");
+    //Methods
+    //-API
+    public void init(CarCityObject inCarCity) {
+        _carCity = XUtils.verify(inCarCity);
     }
+
+    //-Child API
+    protected CarCityObject getCarCity() {
+        return _carCity;
+    }
+
+    //Fields
+    public BuildingScheme _buildingScheme = null;
+
+    private CarCityObject _carCity = null;
 }

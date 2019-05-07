@@ -1,7 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PowerPlantBuildingObject : BuildingObject {
-    //TODO: Implement
+
+    private void FixedUpdate() {
+        float theProductionPerTick =
+            _energyProduction * Time.fixedDeltaTime;
+        getCarCity().changeEnergy(theProductionPerTick);
+    }
+
+    //Fields
+    //-Settings
+    //TODO: Move to building scheme?
+    [SerializeField] private float _energyProduction = 0.1f;
 }

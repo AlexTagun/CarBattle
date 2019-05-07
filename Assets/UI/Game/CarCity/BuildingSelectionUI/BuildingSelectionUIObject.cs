@@ -45,6 +45,7 @@ public class BuildingSelectionUIObject : MonoBehaviour
             BuildingPlanObject theBuildingPlan = XUtils.createObject(
                 inBuildingScheme.buildingPlan
             );
+            theBuildingPlan.init(_carCity);
             theBuildingPlan.getUIInterface().init(
                 _carCity, _constructionSiteUIPrefab
             );

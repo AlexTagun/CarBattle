@@ -50,12 +50,18 @@ public class XUtils : MonoBehaviour
 
     // --- VALIDATION --- 
 
-    public static bool isValid(GameObject inObject) {
-        return !!inObject;
+    public static bool isValid(Object inObject) {
+        return (inObject && null != inObject &&
+            !inObject.name.Equals(kDestroyedName)
+        );
     }
 
     public static bool isValid(Component inComponent) {
-        return !!inComponent && isValid(inComponent.gameObject);
+        return isValid((Object)inComponent) && isValid(inComponent.gameObject);
+    }
+
+    public static bool isValid(object inObject) {
+        return null != inObject;
     }
 
     public static void check(
@@ -65,9 +71,24 @@ public class XUtils : MonoBehaviour
         throw new System.Exception(inErrorMessage);
     }
 
+    public static void check(
+        Object inUnityObject, string inErrorMessage = "<No message>")
+    {
+        if (isValid(inUnityObject)) return;
+        throw new System.Exception(inErrorMessage);
+    }
+
+    public static void check(
+        object inObject, string inErrorMessage = "<No message>")
+    {
+        if (isValid(inObject)) return;
+        throw new System.Exception(inErrorMessage);
+    }
+
+
     public static T_Type verify<T_Type>(
         T_Type inReference, string inErrorMessage = "<No message>")
-        where T_Type : Object
+            where T_Type : class
     {
         if (null != inReference) return inReference;
         throw new System.Exception(inErrorMessage);
@@ -121,7 +142,7 @@ public class XUtils : MonoBehaviour
         return getComponent<T_Type>(inGameObjectComponent.gameObject, inComponentAccessPolicy);
     }
 
-    // --- OBJECTS SPAWNING
+    // --- OBJECTS LIFECYCLE
 
     public static T_Type createObject<T_Type>(T_Type inObject)
         where T_Type : Component
@@ -139,9 +160,16 @@ public class XUtils : MonoBehaviour
         return theObject;
     }
 
-    // --- OBJECT RELATIONS ---
+    public static void Destroy<T_Type>(T_Type inObject)
+        where T_Type : Object
+    {
+        inObject.name = kDestroyedName;
+        Object.Destroy(inObject);
+    }
 
-    public static bool isObjectHasComponent<T_Type>(GameObject inObject, T_Type inComponent)
+// --- OBJECT RELATIONS ---
+
+public static bool isObjectHasComponent<T_Type>(GameObject inObject, T_Type inComponent)
         where T_Type : Component
     {
         check(inObject);
@@ -205,4 +233,6 @@ public class XUtils : MonoBehaviour
         private static LambdaComparer<T_Type> __lambdaComparer =
             new LambdaComparer<T_Type>();
     }
+
+    private static string kDestroyedName = "$";
 }

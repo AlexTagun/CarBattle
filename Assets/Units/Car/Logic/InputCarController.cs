@@ -72,8 +72,11 @@ public class InputCarController : MonoBehaviour
                 XUtils.getComponent<RotateToTargetAngleLogic>(theGunLogic);
             if (!theTargetComponent) continue;
 
+            Vector2 theTurretPosition = theGunLogic.transform.position;
+            Vector2 theDelta = XUtils.getMouseWorldPosition() - theTurretPosition;
+
             theTargetComponent.setTargetAngle(
-                Mathf.Atan2(_carRelatedMousePosition.y, _carRelatedMousePosition.x) * Mathf.Rad2Deg
+                Mathf.Atan2(theDelta.y, theDelta.x) * Mathf.Rad2Deg
             );
         }
     }

@@ -4,9 +4,24 @@ public class BuildingPlanObject : MonoBehaviour
 {
     //Methods
     //-API
-    private static Collider2D[] UNUSED = new Collider2D[1];
+    public void init(CarCityObject inCarCity) {
+        _carCity = XUtils.verify(inCarCity);
+
+        GameObject theCityLevel = inCarCity.getInnerLevel();
+        gameObject.layer = XUtils.verify(theCityLevel).layer;
+        gameObject.transform.SetParent(theCityLevel.transform, true);
+
+        Vector3 theLocalPosition = gameObject.transform.localPosition;
+        theLocalPosition.z = 0.0f;
+        gameObject.transform.localPosition = theLocalPosition;
+    }
+
     public bool isPossibleToBuild() {
-        return (0 == _collider.OverlapCollider(new ContactFilter2D(), UNUSED));
+        var theFilter = new ContactFilter2D();
+        theFilter.SetLayerMask(1 << gameObject.layer);
+        theFilter.useTriggers = true;
+
+        return (0 == _collider.OverlapCollider(theFilter, UNUSED));
     }
 
     public void cancelBuilding() {
@@ -31,7 +46,7 @@ public class BuildingPlanObject : MonoBehaviour
 
         XUtils.getComponent<MouseAttachComponent>(
             gameObject, XUtils.AccessPolicy.ShouldBeCreated
-        ).onMouseMove += (Vector3 inMousePosition)=>{
+        ).onMouseMove += (Vector2 inMousePosition)=>{
             updateColor();
         };
 
@@ -39,7 +54,11 @@ public class BuildingPlanObject : MonoBehaviour
             gameObject, XUtils.AccessPolicy.ShouldBeCreated
         ).onClick += () => {
             if (!isPossibleToBuild()) return;
-            startConstruction();
+
+            ConstructionSiteObject theConstructionSite = createConstructionSite();
+            getUIInterface().processConstructionStart(theConstructionSite);
+
+            Destroy(gameObject);
         };
     }
 
@@ -48,15 +67,17 @@ public class BuildingPlanObject : MonoBehaviour
             isPossibleToBuild() ? Color.green : Color.red;
     }
 
-    public ConstructionSiteObject startConstruction() {
+    public ConstructionSiteObject createConstructionSite() {
         XUtils.check(isPossibleToBuild());
 
         ConstructionSiteObject theConstructionSite = XUtils.createObject(
             getBuildingScheme().constructionSite, transform
         );
-        getUIInterface().processConstructionStart(theConstructionSite);
+        theConstructionSite.init(_carCity);
 
-        Destroy(gameObject);
+        theConstructionSite.transform.SetParent(transform.parent, true);
+        theConstructionSite.gameObject.layer = gameObject.layer;
+
         return theConstructionSite;
     }
 
@@ -67,6 +88,11 @@ public class BuildingPlanObject : MonoBehaviour
     //Fields
     public BuildingScheme _buildingScheme = null;
 
+    private CarCityObject _carCity = null;
+
     private BoxCollider2D _collider = null;
     private SpriteRenderer _sprite = null;
+
+    //-Misc
+    private static Collider2D[] UNUSED = new Collider2D[1];
 }

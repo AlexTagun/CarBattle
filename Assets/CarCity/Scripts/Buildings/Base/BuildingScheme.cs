@@ -7,15 +7,14 @@ public class BuildingScheme : ScriptableObject
     public ConstructionSiteObject constructionSite = null;
     public BuildingObject building = null;
 
+    public float buildPointsToConstruct = 60.0f;
+    public int maxWorkersToAssign = 6;
+
     public string buildingName = "<none>";
 
     public void OnEnable() {
-        if (buildingPlan) {
-            buildingPlan._buildingScheme = this;
-        }
-
-        if (constructionSite) {
-            constructionSite._buildingScheme = this;
-        }
+        XUtils.verify(buildingPlan)._buildingScheme = this;
+        XUtils.verify(constructionSite)._buildingScheme = this;
+        XUtils.verify(building)._buildingScheme = this;
     }
 }
